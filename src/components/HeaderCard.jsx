@@ -6,6 +6,7 @@ import boyImage from '../../assets/hero-boy.png';
  *
  * TODO
  * Putting individual bgWidth and bgColor for each card
+ * Border around the card
  */
 
 function HeaderCard(props) {
@@ -43,7 +44,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 147,
     borderWidth: 0.5,
-    borderColor: '#332e0e80',
+    borderColor: '#332e0e80'
   },
   textWrapper: {
     gap: 9.91,
@@ -53,6 +54,7 @@ const styles = StyleSheet.create({
   baseText: {
     fontFamily: 'Inter',
     color: '#332E0E',
+    maxWidth: 174,
   },
   headerText: {
     fontSize: 20,
@@ -63,7 +65,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: 400,
     letterSpacing: 0.52,
-    maxWidth: 174,
   },
   image: {
     alignSelf: 'flex-end',

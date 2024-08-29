@@ -24,27 +24,28 @@ const headerCardData = [
   },
   {
     id: 2,
-    headingText: 'Tip Header',
-    mainText: '4 transition stages for PSC & tips for each stage.',
+    headingText: 'Stay Hydrated',
+    mainText: 'Drinking plenty of water helps prevent dehydration, which can trigger sickle cell crises.',
     containerColor: '#009444',
     textColor: '#FFFADE',
   },
   {
     id: 3,
-    headingText: 'Tip Header',
-    mainText: '4 transition stages for PSC & tips for each stage.',
+    headingText: 'Avoid Extreme Temperatures',
+    mainText: 'Extreme heat or cold can lead to sickle cell pain crises. Try to maintain a comfortable environment.',
     containerColor: '#FFFFFF',
   },
 ];
 
-const { width } = Dimensions.get('window');
+const { width: windowWidth } = Dimensions.get('window');
+const cardWidth = windowWidth - 42;
 
 function HeaderCardCarousel() {
-  const { container } = styles;
+  const { container, cardContainer, indicatorContainer, dot } = styles;
   const scrollX = useRef(new Animated.Value(0)).current;
 
   const renderItem = ({ item }) => (
-    <View style={{ width }}>
+    <View style={[cardContainer, { width: cardWidth }]}>
       <HeaderCard
         headingText={item.headingText}
         mainText={item.mainText}
@@ -68,13 +69,14 @@ function HeaderCardCarousel() {
             [{ nativeEvent: { contentOffset: { x: scrollX } } }],
             { useNativeDriver: false }
           )}
-          snapToInterval={width}
+          snapToInterval={cardWidth}
           decelerationRate="fast"
           snapToAlignment="start"
+
         />
-        <View style={styles.indicatorContainer}>
+        <View style={indicatorContainer}>
           {headerCardData.map((_, i) => {
-            const inputRange = [(i - 1) * width, i * width, (i + 1) * width];
+            const inputRange = [(i - 1) * cardWidth, i * cardWidth, (i + 1) * cardWidth];
             const dotWidth = scrollX.interpolate({
               inputRange,
               outputRange: [8, 16, 8],
@@ -88,7 +90,7 @@ function HeaderCardCarousel() {
             return (
               <Animated.View
                 key={i.toString()}
-                style={[styles.dot, { width: dotWidth, opacity }]}
+                style={[dot, { width: dotWidth, opacity }]}
               />
             );
           })}
@@ -102,6 +104,11 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  cardContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   indicatorContainer: {
     flexDirection: 'row',
