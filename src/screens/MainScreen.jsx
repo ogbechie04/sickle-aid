@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, Text, View, StyleSheet } from 'react-native';
-import HeaderCard from '../components/HeaderCard';
+import HeaderCardCarousel from '../components/HeaderCardCarousel';
 
 /**
  *
@@ -8,7 +8,15 @@ import HeaderCard from '../components/HeaderCard';
  * Change Gift to users name
  */
 function MainScreen() {
-  const { wrapper, baseText, headerText, bodyText, container, headerContainer } = styles;
+  const {
+    wrapper,
+    baseText,
+    headerText,
+    bodyText,
+    container,
+    headerContainer,
+    carouselContainer,
+  } = styles;
   return (
     <SafeAreaView style={wrapper}>
       <View style={container}>
@@ -16,7 +24,9 @@ function MainScreen() {
           <Text style={[baseText, headerText]}>SickleAid</Text>
           <Text style={[baseText, bodyText]}>Good Morning Gift</Text>
         </View>
-        <HeaderCard headingText={'Booster'} mainText={'Taking 2.5gms of protein everyday could maintain steeze'} />
+        <View style={carouselContainer}>
+          <HeaderCardCarousel />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -31,11 +41,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingTop: 64.98,
-    paddingHorizontal: 21
+    paddingHorizontal: 21,
   },
   headerContainer: {
     alignSelf: 'flex-start',
-    gap: 7
+    gap: 7,
+  },
+  carouselContainer: {
+    width: '100%',
+    flex: 1
   },
   baseText: {
     fontFamily: 'Inter',

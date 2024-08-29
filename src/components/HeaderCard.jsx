@@ -5,23 +5,30 @@ import boyImage from '../../assets/hero-boy.png';
 /**
  *
  * TODO
- * Remove default values for headingText and mainText
+ * Putting individual bgWidth and bgColor for each card
  */
 
 function HeaderCard(props) {
-  const { headingText = "Music", mainText = "Please dont stop" } = props;
-  const { container, containerColor, baseText, headerText, bodyText, textWrapper } = styles;
+  const { headingText, mainText, containerColor, textColor } = props;
+  const {
+    container,
+    baseText,
+    headerText,
+    bodyText,
+    textWrapper,
+    image
+  } = styles;
   return (
     <SafeAreaView>
-    <View style={[container, containerColor]}>
-      <View style={textWrapper}>
-        <Text style={[baseText, headerText]}>{headingText}</Text>
-        <Text style={[baseText, bodyText]}>{mainText}</Text>
+      <View style={[container, { backgroundColor: containerColor }]}>
+        <View style={textWrapper}>
+          <Text style={[baseText, headerText, {color: textColor}]}>{headingText}</Text>
+          <Text style={[baseText, bodyText, {color: textColor}]}>{mainText}</Text>
+        </View>
+        <View>
+          <Image style={image} source={boyImage} />
+        </View>
       </View>
-      <View>
-        <Image source={boyImage} />
-      </View>
-    </View>
     </SafeAreaView>
   );
 }
@@ -31,16 +38,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     flexDirection: 'row',
-    backgroundColor: 'yellow',
     borderRadius: 8,
     paddingLeft: 19,
     width: '100%',
-    height: 147
+    height: 147,
+    borderWidth: 0.5,
+    borderColor: '#332e0e80',
   },
   textWrapper: {
     gap: 9.91,
     alignSelf: 'flex-end',
-    paddingBottom: 14.05
+    paddingBottom: 14.05,
   },
   baseText: {
     fontFamily: 'Inter',
@@ -49,14 +57,18 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: 700,
-    letterSpacing: 0.8
+    letterSpacing: 0.8,
   },
   bodyText: {
     fontSize: 13,
     fontWeight: 400,
     letterSpacing: 0.52,
-    maxWidth: 174
+    maxWidth: 174,
   },
+  image: {
+    alignSelf: 'flex-end',
+    resizeMode: 'contain'
+  }
 });
 
 export default HeaderCard;

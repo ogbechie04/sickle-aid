@@ -5,12 +5,14 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import Tabs from './src/components/Tabs';
 import HeaderCard from './src/components/HeaderCard';
+import HeaderCardCarousel from './src/components/HeaderCardCarousel';
 
 export default function App() {
   return (
     <NavigationContainer>
       <Tabs />
       {/* <HeaderCard /> */}
+      {/* <HeaderCardCarousel /> */}
     </NavigationContainer>
   );
 }
