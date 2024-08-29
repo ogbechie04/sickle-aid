@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 
 function ButtonComp({ title, buttonSpacing }) {
   const { button, buttonText } = styles;
