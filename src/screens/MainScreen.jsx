@@ -1,9 +1,15 @@
 import React from 'react';
-import { SafeAreaView, Text, View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import {
+  SafeAreaView,
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native';
 import HeaderCardCarousel from '../components/HeaderCardCarousel';
 import { Feather } from '@expo/vector-icons';
 import ButtonComp from '../components/Button';
-import commImage from '../../assets/comm.png'
+import CommunitySection from '../components/CommunitySection';
 
 /**
  *
@@ -27,11 +33,22 @@ function MainScreen() {
     iconContainer,
     buttonTextStyle,
     buttonSpacing,
-    checkupDoneContainer
+    checkupDoneContainer,
+    communityHeader,
+    communityText,
+    communityTextContainer,
+    communityContainer,
+    commImageTextContainer,
+    communityImage,
+    joinButton,
+    enterButton,
+    enterButtonText,
+    yellowButtonText,
+    communityButtonContainer
   } = styles;
   return (
     <SafeAreaView style={wrapper}>
-        {/* ----- main container ----- */}
+      {/* ----- main container ----- */}
       <View style={container}>
         {/* ----- header content ----- */}
         <View style={headerContainer}>
@@ -44,7 +61,7 @@ function MainScreen() {
         <View style={divider}></View>
         {/* ----- checkout section ----- */}
         <View style={checkupContainer}>
-            {/* ----- checkout information ----- */}
+          {/* ----- checkout information ----- */}
           <View>
             <Text style={[baseText, bodyText]}>Blood ion checkup</Text>
             <Text style={[baseText, checkupDateTime]}>YYYY-MM-DD | 00:00</Text>
@@ -55,21 +72,15 @@ function MainScreen() {
             <TouchableOpacity style={iconContainer}>
               <Feather name="edit-2" size={14} color="black" />
             </TouchableOpacity>
-            <ButtonComp buttonSpacing={buttonSpacing} buttonTextStyle={[baseText, buttonTextStyle]} buttonText={'Done'} />
+            <ButtonComp
+              buttonSpacing={buttonSpacing}
+              buttonTextStyle={[baseText, buttonTextStyle, yellowButtonText]}
+              buttonText={'Done'}
+            />
           </View>
         </View>
         <View style={divider}></View>
-        {/* ----- community section ----- */}
-        <View>
-            <View>
-                <View>
-                    <Text>In a community?</Text>
-                    <Text>Join conversations, ask questions, and be in the know!</Text>
-                </View>
-                <Image src={commImage} />
-            </View>
-            <View></View>
-        </View>
+        <CommunitySection />
       </View>
     </SafeAreaView>
   );
@@ -117,12 +128,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#332e0e80',
     marginVertical: 10,
   },
+  //* ----- checkout section ----- */
   checkupContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
     // borderWidth: 5,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   checkupDateTime: {
     fontSize: 12,
@@ -137,7 +149,7 @@ const styles = StyleSheet.create({
   },
   checkupDoneContainer: {
     justifyContent: 'space-between',
-    gap: 18
+    gap: 18,
   },
   iconContainer: {
     borderWidth: 1,
@@ -145,20 +157,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 4,
-    alignSelf: 'flex-end'
+    alignSelf: 'flex-end',
+  },
+  yellowButtonText: {
+    color: '#FFFADE',
   },
   buttonTextStyle: {
-    color: '#FFFADE',
     fontSize: 13,
     lineHeight: 24,
     letterSpacing: 0.52,
-    textAlign: 'center'
+    textAlign: 'center',
   },
   buttonSpacing: {
     paddingHorizontal: 19,
     paddingVertical: 5,
     backgroundColor: '#0B9444',
-  }
+  },
 });
 
 export default MainScreen;
