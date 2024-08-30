@@ -4,11 +4,9 @@ import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 function ButtonComp({ buttonText, buttonSpacing, buttonTextStyle }) {
   const { button } = styles;
   return (
-    <>
       <TouchableOpacity style={[button, buttonSpacing]}>
         <Text style={buttonTextStyle}>{buttonText}</Text>
       </TouchableOpacity>
-    </>
   );
 }
 

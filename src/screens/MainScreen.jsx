@@ -10,6 +10,7 @@ import HeaderCardCarousel from '../components/HeaderCardCarousel';
 import { Feather } from '@expo/vector-icons';
 import ButtonComp from '../components/Button';
 import CommunitySection from '../components/CommunitySection';
+import HelpButton from '../components/HelpButton';
 
 /**
  *
@@ -34,17 +35,8 @@ function MainScreen() {
     buttonTextStyle,
     buttonSpacing,
     checkupDoneContainer,
-    communityHeader,
-    communityText,
-    communityTextContainer,
-    communityContainer,
-    commImageTextContainer,
-    communityImage,
-    joinButton,
-    enterButton,
-    enterButtonText,
     yellowButtonText,
-    communityButtonContainer
+    helpContainer
   } = styles;
   return (
     <SafeAreaView style={wrapper}>
@@ -81,6 +73,9 @@ function MainScreen() {
         </View>
         <View style={divider}></View>
         <CommunitySection />
+        <View style={helpContainer}>
+            <HelpButton />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -173,6 +168,10 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     backgroundColor: '#0B9444',
   },
+  helpContainer: {
+    marginTop: 10.35,
+    alignSelf: 'flex-end'
+  }
 });
 
 export default MainScreen;
