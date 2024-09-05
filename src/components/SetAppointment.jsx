@@ -35,7 +35,7 @@ function SetAppointment({ navigation }) {
       appointmentTitle: title,
       appointmentDate: date.toISOString(),
       appointmentTime: time.toISOString(),
-      appointmentDoctor: doctorsName,
+      appointmentDoctorName: doctorsName,
     });
   };
 
