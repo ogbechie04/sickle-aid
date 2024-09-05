@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 
-function ButtonComp({ buttonText, buttonSpacing, buttonTextStyle }) {
+function ButtonComp({ buttonText, buttonSpacing, buttonTextStyle, onPress }) {
   const { button } = styles;
   return (
-      <TouchableOpacity style={[button, buttonSpacing]}>
+      <TouchableOpacity style={[button, buttonSpacing]} onPress={onPress}>
         <Text style={buttonTextStyle}>{buttonText}</Text>
       </TouchableOpacity>
   );

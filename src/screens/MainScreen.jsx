@@ -16,9 +16,10 @@ import HelpButton from '../components/HelpButton';
  *
  * TODO: Change Gift to users name
  * TODO: Work on functionality for checkup
+ * TODO: Clean up date and time code
  * ? Why is the second divider darker than the first
  */
-function MainScreen() {
+function MainScreen({ navigation, route }) {
   const {
     wrapper,
     baseText,
@@ -36,8 +37,12 @@ function MainScreen() {
     buttonSpacing,
     checkupDoneContainer,
     yellowButtonText,
-    helpContainer
+    helpContainer,
   } = styles;
+
+  const {reminderTitle, reminderDate, reminderTime} = route.params || {};
+  console.log(reminderTitle, reminderDate, reminderTime);
+
   return (
     <SafeAreaView style={wrapper}>
       {/* ----- main container ----- */}
@@ -51,17 +56,20 @@ function MainScreen() {
           <HeaderCardCarousel />
         </View>
         <View style={divider}></View>
-        {/* ----- checkout section ----- */}
+        {/* ----- checkup section ----- */}
         <View style={checkupContainer}>
-          {/* ----- checkout information ----- */}
+          {/* ----- checkup information ----- */}
           <View>
             <Text style={[baseText, bodyText]}>Blood ion checkup</Text>
             <Text style={[baseText, checkupDateTime]}>YYYY-MM-DD | 00:00</Text>
             <Text style={[baseText, checkupDoctor]}>With Dr. Abel Onajin</Text>
           </View>
-          {/* ----- checkout edit and done ----- */}
+          {/* ----- checkup edit and done ----- */}
           <View style={checkupDoneContainer}>
-            <TouchableOpacity style={iconContainer}>
+            <TouchableOpacity
+              style={iconContainer}
+              onPress={() => navigation.navigate('SetReminder')}
+            >
               <Feather name="edit-2" size={14} color="black" />
             </TouchableOpacity>
             <ButtonComp
@@ -74,7 +82,7 @@ function MainScreen() {
         <View style={divider}></View>
         <CommunitySection />
         <View style={helpContainer}>
-            <HelpButton />
+          <HelpButton />
         </View>
       </View>
     </SafeAreaView>
@@ -170,8 +178,8 @@ const styles = StyleSheet.create({
   },
   helpContainer: {
     marginTop: 10.35,
-    alignSelf: 'flex-end'
-  }
+    alignSelf: 'flex-end',
+  },
 });
 
 export default MainScreen;

@@ -1,8 +1,8 @@
 import React from 'react';
-import MainScreen from '../screens/MainScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import homeIcon from '../../assets/icons/Home-6-white.png'
+import StackNavigator from './Stack';
 
 const Tab = createBottomTabNavigator();
 
@@ -19,7 +19,7 @@ function Tabs() {
         headerShown: false
       }}
     >
-      <Tab.Screen name={'Home'} component={MainScreen} options={{ tabBarIcon: ({focused}) => (
+      <Tab.Screen name={'Home'} component={StackNavigator} options={{ tabBarIcon: ({focused}) => (
         <Image source={homeIcon} style={{width: 25, tintColor: focused ? '#009444' : 'black', height: 25}} />
       )}} />
     </Tab.Navigator>
