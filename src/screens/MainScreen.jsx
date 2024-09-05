@@ -4,11 +4,9 @@ import {
   Text,
   View,
   StyleSheet,
-  TouchableOpacity,
 } from 'react-native';
 import HeaderCardCarousel from '../components/HeaderCardCarousel';
 import { Feather } from '@expo/vector-icons';
-import ButtonComp from '../components/Button';
 import CommunitySection from '../components/CommunitySection';
 import HelpButton from '../components/HelpButton';
 import AppointmentSection from '../components/AppointmentSection';
@@ -36,7 +34,7 @@ function MainScreen({ navigation, route }) {
     helpContainer,
   } = styles;
 
-  const {reminderTitle, reminderDate, reminderTime, reminderDoctor} = route.params || {};
+  const {appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor} = route.params || {};
 
   return (
     <SafeAreaView style={wrapper}>
@@ -51,7 +49,7 @@ function MainScreen({ navigation, route }) {
           <HeaderCardCarousel />
         </View>
         <View style={divider}></View>
-        <AppointmentSection navigation={navigation} route={{params:{reminderTitle, reminderDate, reminderTime, reminderDoctor}}} />
+        <AppointmentSection navigation={navigation} route={{params:{appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor}}} />
         <View style={divider}></View>
         <CommunitySection />
         <View style={helpContainer}>

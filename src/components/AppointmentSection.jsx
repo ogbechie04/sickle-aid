@@ -4,7 +4,7 @@ import { Feather } from '@expo/vector-icons';
 import ButtonComp from './Button';
 
 function AppointmentSection(props) {
-    const {navigation, route} = props;
+  const { navigation, route } = props;
   const {
     checkupContainer,
     checkupDateTime,
@@ -18,15 +18,15 @@ function AppointmentSection(props) {
     bodyText,
   } = styles;
 
-  const { reminderTitle, reminderDate, reminderTime, reminderDoctor } =
+  const { appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor } =
     route.params || {};
-  console.log(reminderTitle, reminderDate, reminderTime, reminderDoctor);
+  console.log(appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor);
 
-  const date = new Date(reminderDate);
+  const date = new Date(appointmentDate);
   const tempDate = date.toLocaleDateString().split('/');
   const displayDate = `${tempDate[2]}-${tempDate[0]}-${tempDate[1]}`;
 
-  const time = new Date(reminderTime);
+  const time = new Date(appointmentTime);
   const tempTime = time.toLocaleTimeString().split(':');
   const displayTime = `${tempTime[0]}:${tempTime[1]}`;
   console.log(tempTime);
@@ -37,20 +37,20 @@ function AppointmentSection(props) {
       {/* ----- checkup information ----- */}
       <View>
         <Text style={[baseText, bodyText]}>
-          {reminderTitle ? reminderTitle : 'Add an appointment'}
+          {appointmentTitle ? appointmentTitle : 'Add an appointment'}
         </Text>
         <Text
           style={[baseText, checkupDateTime]}
-        >{`${reminderDate ? displayDate : 'YY-MM-DD'} | ${reminderTime ? displayTime : '00:00'}`}</Text>
+        >{`${appointmentDate ? displayDate : 'YY-MM-DD'} | ${appointmentTime ? displayTime : '00:00'}`}</Text>
         <Text
           style={[baseText, checkupDoctor]}
-        >{`With Dr ${reminderDoctor ? reminderDoctor : 'John Doe'}`}</Text>
+        >{`With Dr ${appointmentDoctor ? appointmentDoctor : 'John Doe'}`}</Text>
       </View>
       {/* ----- checkup edit and done ----- */}
       <View style={checkupDoneContainer}>
         <TouchableOpacity
           style={iconContainer}
-          onPress={() => navigation.navigate('SetReminder')}
+          onPress={() => navigation.navigate('Setappointment')}
         >
           <Feather name="edit-2" size={14} color="black" />
         </TouchableOpacity>

@@ -5,11 +5,11 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ButtonComp from './Button';
 
 /**
- * TODO: Add functionality to SetReminder
+ * TODO: Add functionality to SetAppointment
  * TODO: Add validation for form
  */
 
-function SetReminder({ navigation }) {
+function SetAppointment({ navigation }) {
   const {
     wrapper,
     container,
@@ -30,12 +30,12 @@ function SetReminder({ navigation }) {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  const addreminder = () => {
+  const addAppointment = () => {
     navigation.navigate('MainScreen', {
-      reminderTitle: title,
-      reminderDate: date.toISOString(),
-      reminderTime: time.toISOString(),
-      reminderDoctor: doctorsName,
+      appointmentTitle: title,
+      appointmentDate: date.toISOString(),
+      appointmentTime: time.toISOString(),
+      appointmentDoctor: doctorsName,
     });
   };
 
@@ -165,7 +165,7 @@ function SetReminder({ navigation }) {
           buttonText={'Add'}
           buttonSpacing={buttonSpacing}
           buttonTextStyle={[buttonTextStyle, baseText]}
-          onPress={addreminder}
+          onPress={addAppointment}
         />
       </View>
     </SafeAreaView>
@@ -240,4 +240,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SetReminder;
+export default SetAppointment;
