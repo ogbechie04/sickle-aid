@@ -20,20 +20,17 @@ const headerCardData = [
     id: 1,
     headingText: 'Booster',
     mainText: 'Taking 2.5gms of protein everyday could maintain steeze',
-    containerColor: '#FFED4A',
   },
   {
     id: 2,
     headingText: 'Stay Hydrated',
     mainText: 'Drinking plenty of water helps prevent dehydration, which can trigger sickle cell crises.',
     containerColor: '#009444',
-    textColor: '#FFFADE',
   },
   {
     id: 3,
     headingText: 'Avoid Extreme Temperatures',
     mainText: 'Extreme heat or cold can lead to sickle cell pain crises. Try to maintain a comfortable environment.',
-    containerColor: '#FFFFFF',
   },
 ];
 

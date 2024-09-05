@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import ButtonComp from './Button';
 
 function AppointmentSection(props) {
-  const { navigation, route } = props;
+  const {
+    navigation,
+    appointmentTitle,
+    appointmentDate,
+    appointmentTime,
+    appointmentDoctorName,
+  } = props;
   const {
     checkupContainer,
     checkupDateTime,
@@ -18,20 +24,6 @@ function AppointmentSection(props) {
     bodyText,
   } = styles;
 
-  const { appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor } =
-    route.params || {};
-  console.log(appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor);
-
-  const date = new Date(appointmentDate);
-  const tempDate = date.toLocaleDateString().split('/');
-  const displayDate = `${tempDate[2]}-${tempDate[0]}-${tempDate[1]}`;
-
-  const time = new Date(appointmentTime);
-  const tempTime = time.toLocaleTimeString().split(':');
-  const displayTime = `${tempTime[0]}:${tempTime[1]}`;
-  console.log(tempTime);
-  console.log(displayTime);
-
   return (
     <View style={checkupContainer}>
       {/* ----- checkup information ----- */}
@@ -41,16 +33,16 @@ function AppointmentSection(props) {
         </Text>
         <Text
           style={[baseText, checkupDateTime]}
-        >{`${appointmentDate ? displayDate : 'YY-MM-DD'} | ${appointmentTime ? displayTime : '00:00'}`}</Text>
+        >{`${appointmentDate ? appointmentDate : 'YY-MM-DD'} | ${appointmentTime ? appointmentTime : '00:00'}`}</Text>
         <Text
           style={[baseText, checkupDoctor]}
-        >{`With Dr ${appointmentDoctor ? appointmentDoctor : 'John Doe'}`}</Text>
+        >{`With Dr ${appointmentDoctorName ? appointmentDoctorName : 'John Doe'}`}</Text>
       </View>
       {/* ----- checkup edit and done ----- */}
       <View style={checkupDoneContainer}>
         <TouchableOpacity
           style={iconContainer}
-          onPress={() => navigation.navigate('Setappointment')}
+          onPress={() => navigation.navigate('SetAppointment')}
         >
           <Feather name="edit-2" size={14} color="black" />
         </TouchableOpacity>

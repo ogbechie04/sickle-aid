@@ -35,8 +35,9 @@ function SetAppointment({ navigation }) {
       appointmentTitle: title,
       appointmentDate: date.toISOString(),
       appointmentTime: time.toISOString(),
-      appointmentDoctor: doctorsName,
+      appointmentDoctorName: doctorsName,
     });
+    console.log(doctorsName)
   };
 
   const showDatePicker = () => {
@@ -157,7 +158,7 @@ function SetAppointment({ navigation }) {
               placeholder="Dr, Name"
               placeholderTextColor={'#332E0E'}
               value={doctorsName}
-              onChange={(text) => setDoctorsName(text)}
+              onChangeText={(text) => setDoctorsName(text)}
             />
           </View>
         </View>

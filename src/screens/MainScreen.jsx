@@ -1,15 +1,12 @@
-import React from 'react';
-import {
-  SafeAreaView,
-  Text,
-  View,
-  StyleSheet,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { SafeAreaView, Text, View, StyleSheet } from 'react-native';
 import HeaderCardCarousel from '../components/HeaderCardCarousel';
 import { Feather } from '@expo/vector-icons';
 import CommunitySection from '../components/CommunitySection';
 import HelpButton from '../components/HelpButton';
 import AppointmentSection from '../components/AppointmentSection';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { formatDate, formatTime } from '../utils/formatDateTime';
 
 /**
  *
@@ -34,7 +31,81 @@ function MainScreen({ navigation, route }) {
     helpContainer,
   } = styles;
 
-  const {appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor} = route.params || {};
+  const [displayTitle, setDisplayTitle] = useState('');
+  const [displayDate, setDisplayDate] = useState(null);
+  const [displayTime, setDisplayTime] = useState(null);
+  const [displayDoctorName, setDisplayDoctorName] = useState('');
+
+  const APPOINTMENT_TITLE_KEY = 'appointmentTitle';
+  const APPOINTMENT_DATE_KEY = 'appointmentDate';
+  const APPOINTMENT_TIME_KEY = 'appointmentTime';
+  const APPOINTMENT_DOCTOR_KEY = 'appointmentDoctorName';
+
+  const {
+    appointmentTitle,
+    appointmentDate,
+    appointmentTime,
+    appointmentDoctorName,
+  } = route.params || {};
+  console.log(
+    appointmentTitle,
+    appointmentDate,
+    appointmentTime,
+    appointmentDoctorName
+  );
+
+  //*   Retrieves the stored appointment data from AsyncStorage when the component mounts
+  useEffect(() => {
+    const getAppointment = async () => {
+      try {
+        Ï;
+        const storedTitle = await AsyncStorage.getItem(APPOINTMENT_TITLE_KEY);
+        const storedDate = await AsyncStorage.getItem(APPOINTMENT_DATE_KEY);
+        const storedTime = await AsyncStorage.getItem(APPOINTMENT_TIME_KEY);
+        const storedDoctorName = await AsyncStorage.getItem(
+          APPOINTMENT_DOCTOR_KEY
+        );
+
+        // Sets the useState values for each to the stored Values
+        if (storedTitle) setDisplayTitle(storedTitle);
+        if (storedDate) setDisplayDate(formatDate(storedDate));
+        if (storedTime) setDisplayTime(formatTime(storedTime));
+        if (storedDoctorName) setDisplayDoctorName(storedDoctorName);
+      } catch {
+        console.log('Error getting appointment');
+      }
+    };
+    getAppointment();
+  }, []);
+
+  //* Save the appointmentData in AsyncStorage if it comes from the navigation Params
+  useEffect(() => {
+    if (appointmentTitle) {
+      setDisplayTitle(appointmentTitle);
+      AsyncStorage.setItem(APPOINTMENT_TITLE_KEY, appointmentTitle);
+    }
+    if (appointmentDate) {
+      const formattedDate = formatDate(appointmentDate);
+      setDisplayDate(formattedDate);
+      AsyncStorage.setItem(APPOINTMENT_DATE_KEY, appointmentDate);
+    }
+    if (appointmentTime) {
+      const formattedTime = formatTime(appointmentTime);
+      setDisplayTime(formattedTime);
+      AsyncStorage.setItem(APPOINTMENT_TIME_KEY, appointmentTime);
+    }
+    if (appointmentDoctorName) {
+      setDisplayDoctorName(appointmentDoctorName);
+      AsyncStorage.setItem(APPOINTMENT_DOCTOR_KEY, appointmentDoctorName);
+    } else {
+      console.log(appointmentDoctorName);
+    }
+  }, [
+    appointmentTitle,
+    appointmentDate,
+    appointmentTime,
+    appointmentDoctorName,
+  ]);
 
   return (
     <SafeAreaView style={wrapper}>
@@ -49,7 +120,13 @@ function MainScreen({ navigation, route }) {
           <HeaderCardCarousel />
         </View>
         <View style={divider}></View>
-        <AppointmentSection navigation={navigation} route={{params:{appointmentTitle, appointmentDate, appointmentTime, appointmentDoctor}}} />
+        <AppointmentSection
+          navigation={navigation}
+          appointmentTitle={displayTitle}
+          appointmentDate={displayDate}
+          appointmentTime={displayTime}
+          appointmentDoctorName={displayDoctorName}
+        />
         <View style={divider}></View>
         <CommunitySection />
         <View style={helpContainer}>

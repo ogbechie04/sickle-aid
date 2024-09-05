@@ -6,11 +6,11 @@ import boyImage from '../../assets/hero-boy.png';
  *
  * TODO
  * Putting individual bgWidth and bgColor for each card
- * Border around the card
+ * TODO: Add box-shadow for the card
  */
 
 function HeaderCard(props) {
-  const { headingText, mainText, containerColor, textColor } = props;
+  const { headingText, mainText, textColor } = props;
   const {
     container,
     baseText,
@@ -21,7 +21,7 @@ function HeaderCard(props) {
   } = styles;
   return (
     <SafeAreaView>
-      <View style={[container, { backgroundColor: containerColor }]}>
+      <View style={[container]}>
         <View style={textWrapper}>
           <Text style={[baseText, headerText, {color: textColor}]}>{headingText}</Text>
           <Text style={[baseText, bodyText, {color: textColor}]}>{mainText}</Text>
@@ -43,8 +43,10 @@ const styles = StyleSheet.create({
     paddingLeft: 19,
     width: '100%',
     height: 147,
-    borderWidth: 0.5,
-    borderColor: '#332e0e80'
+    // borderWidth: 0.5,
+    // borderColor: '#332e0e80',
+    backgroundColor: '#F1FAF5',
+    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
   },
   textWrapper: {
     gap: 9.91,
