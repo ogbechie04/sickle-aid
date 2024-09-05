@@ -11,12 +11,16 @@ import { Feather } from '@expo/vector-icons';
 import ButtonComp from '../components/Button';
 import CommunitySection from '../components/CommunitySection';
 import HelpButton from '../components/HelpButton';
+import AppointmentSection from '../components/AppointmentSection';
 
 /**
  *
  * TODO: Change Gift to users name
  * TODO: Work on functionality for checkup
  * TODO: Clean up date and time code
+ * Todo: Add functionality to help button
+ * TODO: Clear appointment details when Done is clicked
+ * TODO: Add notification bell to top of app
  * ? Why is the second divider darker than the first
  */
 function MainScreen({ navigation, route }) {
@@ -29,19 +33,10 @@ function MainScreen({ navigation, route }) {
     headerContainer,
     carouselContainer,
     divider,
-    checkupContainer,
-    checkupDateTime,
-    checkupDoctor,
-    iconContainer,
-    buttonTextStyle,
-    buttonSpacing,
-    checkupDoneContainer,
-    yellowButtonText,
     helpContainer,
   } = styles;
 
-  const {reminderTitle, reminderDate, reminderTime} = route.params || {};
-  console.log(reminderTitle, reminderDate, reminderTime);
+  const {reminderTitle, reminderDate, reminderTime, reminderDoctor} = route.params || {};
 
   return (
     <SafeAreaView style={wrapper}>
@@ -56,29 +51,7 @@ function MainScreen({ navigation, route }) {
           <HeaderCardCarousel />
         </View>
         <View style={divider}></View>
-        {/* ----- checkup section ----- */}
-        <View style={checkupContainer}>
-          {/* ----- checkup information ----- */}
-          <View>
-            <Text style={[baseText, bodyText]}>Blood ion checkup</Text>
-            <Text style={[baseText, checkupDateTime]}>YYYY-MM-DD | 00:00</Text>
-            <Text style={[baseText, checkupDoctor]}>With Dr. Abel Onajin</Text>
-          </View>
-          {/* ----- checkup edit and done ----- */}
-          <View style={checkupDoneContainer}>
-            <TouchableOpacity
-              style={iconContainer}
-              onPress={() => navigation.navigate('SetReminder')}
-            >
-              <Feather name="edit-2" size={14} color="black" />
-            </TouchableOpacity>
-            <ButtonComp
-              buttonSpacing={buttonSpacing}
-              buttonTextStyle={[baseText, buttonTextStyle, yellowButtonText]}
-              buttonText={'Done'}
-            />
-          </View>
-        </View>
+        <AppointmentSection navigation={navigation} route={{params:{reminderTitle, reminderDate, reminderTime, reminderDoctor}}} />
         <View style={divider}></View>
         <CommunitySection />
         <View style={helpContainer}>
@@ -131,40 +104,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#332e0e80',
     marginVertical: 10,
   },
-  //* ----- checkout section ----- */
-  checkupContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    // borderWidth: 5,
-    alignItems: 'center',
-  },
-  checkupDateTime: {
-    fontSize: 12,
-    color: '#332E0E',
-    marginTop: 4,
-  },
-  checkupDoctor: {
-    fontSize: 13,
-    color: '#332E0E',
-    marginTop: 7,
-    letterSpacing: 0.52,
-  },
-  checkupDoneContainer: {
-    justifyContent: 'space-between',
-    gap: 18,
-  },
-  iconContainer: {
-    borderWidth: 1,
-    borderRadius: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 4,
-    alignSelf: 'flex-end',
-  },
-  yellowButtonText: {
-    color: '#FFFADE',
-  },
+
   buttonTextStyle: {
     fontSize: 13,
     lineHeight: 24,

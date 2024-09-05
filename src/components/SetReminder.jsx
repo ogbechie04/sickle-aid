@@ -1,20 +1,12 @@
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  Text,
-  TouchableOpacity,
-  View,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { SafeAreaView, Text, View, StyleSheet, TextInput } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 import ButtonComp from './Button';
 
 /**
  * TODO: Add functionality to SetReminder
- * TODO: Add
+ * TODO: Add validation for form
  */
 
 function SetReminder({ navigation }) {
@@ -34,6 +26,7 @@ function SetReminder({ navigation }) {
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [doctorsName, setDoctorsName] = useState('');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
@@ -42,6 +35,7 @@ function SetReminder({ navigation }) {
       reminderTitle: title,
       reminderDate: date.toISOString(),
       reminderTime: time.toISOString(),
+      reminderDoctor: doctorsName,
     });
   };
 
@@ -154,7 +148,16 @@ function SetReminder({ navigation }) {
               onConfirm={handleTimeConfirm}
               onCancel={hideTimePicker}
               is24Hour={true}
-              minimumDate={new Date()}
+            />
+          </View>
+          {/* ----- DOCTORS NAME ----- */}
+          <View style={inputContainer}>
+            <TextInput
+              style={[input, baseText]}
+              placeholder="Dr, Name"
+              placeholderTextColor={'#332E0E'}
+              value={doctorsName}
+              onChange={(text) => setDoctorsName(text)}
             />
           </View>
         </View>
@@ -177,7 +180,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 64.98,
+    paddingTop: 20,
     paddingHorizontal: 24,
     gap: 20,
   },
