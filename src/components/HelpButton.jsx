@@ -1,11 +1,16 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
 import helpIcon from '../../assets/icons/help-icon.png';
+import SosScreen from '../screens/SosScreen';
 
-function HelpButton() {
+function HelpButton(props) {
+  const { navigation } = props;
   const { container, helpText } = styles;
   return (
-    <TouchableOpacity style={container}>
+    <TouchableOpacity
+      style={container}
+      onPress={() => navigation.navigate('SosScreen')}
+    >
       <Image source={helpIcon} />
       <Text style={helpText}>Tap {'\n'} Help!!</Text>
     </TouchableOpacity>
@@ -28,7 +33,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     color: '#009444',
-  }
+  },
 });
 
 export default HelpButton;

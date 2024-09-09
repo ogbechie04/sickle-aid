@@ -29,6 +29,7 @@ function MainScreen({ navigation, route }) {
     carouselContainer,
     divider,
     helpContainer,
+    notificationContainer
   } = styles;
 
   const [displayTitle, setDisplayTitle] = useState('');
@@ -58,7 +59,6 @@ function MainScreen({ navigation, route }) {
   useEffect(() => {
     const getAppointment = async () => {
       try {
-        Ï;
         const storedTitle = await AsyncStorage.getItem(APPOINTMENT_TITLE_KEY);
         const storedDate = await AsyncStorage.getItem(APPOINTMENT_DATE_KEY);
         const storedTime = await AsyncStorage.getItem(APPOINTMENT_TIME_KEY);
@@ -111,6 +111,10 @@ function MainScreen({ navigation, route }) {
     <SafeAreaView style={wrapper}>
       {/* ----- main container ----- */}
       <View style={container}>
+         {/* notification bell */}
+         <View style={notificationContainer}>
+            <Feather name="bell" size={24} color="black" />
+        </View>
         {/* ----- header content ----- */}
         <View style={headerContainer}>
           <Text style={[baseText, headerText]}>SickleAid</Text>
@@ -130,7 +134,7 @@ function MainScreen({ navigation, route }) {
         <View style={divider}></View>
         <CommunitySection />
         <View style={helpContainer}>
-          <HelpButton />
+          <HelpButton navigation={navigation} />
         </View>
       </View>
     </SafeAreaView>
@@ -145,8 +149,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 64.98,
+    paddingTop: 20,
     paddingHorizontal: 21,
+  },
+  notificationContainer: {
+    width: '100%',
+    alignItems: 'flex-end',
+    paddingBottom: 20.98
   },
   headerContainer: {
     alignSelf: 'flex-start',

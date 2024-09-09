@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import ButtonComp from './Button';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { formatDate, formatTime } from '../utils/formatDateTime';
 
 function AppointmentSection(props) {
   const {

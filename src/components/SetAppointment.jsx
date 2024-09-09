@@ -13,7 +13,7 @@ function SetAppointment({ navigation }) {
   const {
     wrapper,
     container,
-    heading,
+    headingContainer,
     headerText,
     baseText,
     detailsContainer,
@@ -84,7 +84,7 @@ function SetAppointment({ navigation }) {
   return (
     <SafeAreaView style={wrapper}>
       <View style={container}>
-        <View style={heading}>
+        <View style={headingContainer}>
           <Feather
             name="chevron-left"
             size={24}
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     gap: 20,
   },
-  heading: {
+  headingContainer: {
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',

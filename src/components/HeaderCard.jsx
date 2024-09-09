@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     // borderWidth: 0.5,
     // borderColor: '#332e0e80',
     backgroundColor: '#F1FAF5',
-    boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+    boxShadow: '0px 4px 4px #999985',
   },
   textWrapper: {
     gap: 9.91,
