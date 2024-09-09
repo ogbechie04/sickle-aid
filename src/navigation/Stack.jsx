@@ -11,7 +11,6 @@ function HomeStack() {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name={'MainScreen'} component={MainScreen} />
       <Stack.Screen name={'SetAppointment'} component={SetAppointment} />
-      <Stack.Screen name={'SosScreen'} component={SosScreen} />
     </Stack.Navigator>
   )
 }

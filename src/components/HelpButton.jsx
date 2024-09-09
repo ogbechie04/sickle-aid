@@ -9,7 +9,7 @@ function HelpButton(props) {
   return (
     <TouchableOpacity
       style={container}
-      onPress={() => navigation.navigate('SosScreen')}
+      onPress={() => navigation.navigate('SOS')}
     >
       <Image source={helpIcon} />
       <Text style={helpText}>Tap {'\n'} Help!!</Text>
