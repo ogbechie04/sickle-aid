@@ -34,7 +34,12 @@ const OnboardingScreen = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity>
-          <Text style={styles.skipText}>Skip</Text>
+          <Text
+            style={styles.skipText}
+            onPress={() => navigation.navigate('SignUp')}
+          >
+            Skip
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.pagination}>

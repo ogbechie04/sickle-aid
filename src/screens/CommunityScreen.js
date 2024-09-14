@@ -32,7 +32,12 @@ const CommunityScreen = () => {
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('MainApp')}>
-          <Text style={styles.skipText}>Skip</Text>
+          <Text
+            style={styles.skipText}
+            onPress={() => navigation.navigate('SignUp')}
+          >
+            Skip
+          </Text>
         </TouchableOpacity>
       </View>
       <View style={styles.pagination}>
