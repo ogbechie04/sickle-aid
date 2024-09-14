@@ -1,12 +1,18 @@
 /* eslint-disable react/prop-types */
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-
 const LovedOnesScreen = () => {
-    const navigation = useNavigation();
-    
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -17,11 +23,12 @@ const LovedOnesScreen = () => {
         />
         <Text style={styles.title}>LOVED ONES</Text>
         <Text style={styles.description}>
-          Loved one of a PSC, would receive real-time updates on their condition and location during a crisis.
+          Loved one of a PSC, would receive real-time updates on their condition
+          and location during a crisis.
         </Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('NextScreen')}
+          onPress={() => navigation.navigate('Communityscreen')}
         >
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
@@ -41,7 +48,7 @@ const LovedOnesScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFF9C4',
+    backgroundColor: 'mintcream',
   },
   content: {
     flex: 1,
@@ -50,9 +57,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   image: {
-    width: 250,
-    height: 200,
-    borderRadius: 30,
+    width: 293.34,
+    height: 217.48,
+    borderRadius: 90,
     marginBottom: 30,
   },
   title: {
@@ -66,7 +73,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   button: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: 'forestgreen',
     paddingVertical: 12,
     paddingHorizontal: 40,
     borderRadius: 25,
