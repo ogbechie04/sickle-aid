@@ -25,6 +25,7 @@ function HomeStack() {
     </Stack.Navigator>
   )
 }
+
 function SOSStack() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
@@ -35,4 +36,4 @@ function SOSStack() {
   )
 }
 
-export { OnboardingScreen, HomeStack, SOSStack }
+export { OnboardingStack, HomeStack, SOSStack }
