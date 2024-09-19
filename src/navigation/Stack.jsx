@@ -3,8 +3,19 @@ import { createStackNavigator } from '@react-navigation/stack'
 import MainScreen from '../screens/MainScreen'
 import SetAppointment from '../components/SetAppointment'
 import SosScreen from '../screens/SosScreen'
+import OnboardingScreen from '../screens/OnboardingScreen'
+import LovedOnesScreen from '../screens/LovedOnesScreen'
 
 const Stack = createStackNavigator()
+
+function OnboardingStack() {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name={'Onboarding'} component={OnboardingScreen} />
+      <Stack.Screen name={'LovedOnes'} component={LovedOnesScreen} />
+    </Stack.Navigator>
+  )
+}
 
 function HomeStack() {
   return (
@@ -24,4 +35,4 @@ function SOSStack() {
   )
 }
 
-export { HomeStack, SOSStack }
+export { OnboardingScreen, HomeStack, SOSStack }
