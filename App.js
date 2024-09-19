@@ -1,25 +1,19 @@
 import React from 'react';
+// import { StatusBar } from 'expo-status-bar';
+// import { StyleSheet, Text, View } from 'react-native';
+// import ButtonComp from './src/components/button';
 import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import OnboardingScreen from './src/screens/OnboardingScreen';
-import LovedOnesScreen from './src/screens/LovedOnesScreen';
-
-const Stack = createStackNavigator();
+import Tabs from './src/navigation/Tabs';
+import HeaderCard from './src/components/HeaderCard';
+import HeaderCardCarousel from './src/components/HeaderCardCarousel';
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Onboarding">
-        <Stack.Screen
-          name="Onboarding"
-          component={OnboardingScreen}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen name="LovedOnes" component={LovedOnesScreen} />
-        {/* Add other screens here */}
-      </Stack.Navigator>
+      <Tabs />
+      {/* <HeaderCard /> */}
+      {/* <HeaderCardCarousel /> */}
     </NavigationContainer>
   );
-};
+}
 
-export default App;

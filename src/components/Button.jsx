@@ -1,29 +1,19 @@
 import React from 'react';
-import { Button, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text } from 'react-native';
 
-function ButtonComp({ title, buttonSpacing }) {
-  const { button, buttonText } = styles;
+function ButtonComp({ buttonText, buttonSpacing, buttonTextStyle, onPress }) {
+  const { button } = styles;
   return (
-    <>
-      <TouchableOpacity style={[button, buttonSpacing]}>
-        <Text style={buttonText}>{title}</Text>
+      <TouchableOpacity style={[button, buttonSpacing]} onPress={onPress}>
+        <Text style={buttonTextStyle}>{buttonText}</Text>
       </TouchableOpacity>
-    </>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: 'green',
     borderRadius: 71,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    lineHeight: 24,
-    letterSpacing: 0.64
-  }
 });
 
 export default ButtonComp;
