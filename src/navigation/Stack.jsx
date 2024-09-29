@@ -5,6 +5,15 @@ import SetAppointment from '../components/SetAppointment'
 import SosScreen from '../screens/SosScreen'
 import OnboardingScreen from '../screens/OnboardingScreen'
 import LovedOnesScreen from '../screens/LovedOnesScreen'
+import CommunityScreen from '../screens/CommunityScreen'
+import SignUpScreen from '../screens/SignUpScreen'
+import SignInScreen from '../screens/SignInScreen'
+import PasswordRecoveryScreen from '../screens/PasswordRecoveryScreen'
+import PasswordResetScreen from '../screens/PasswordResetScreen'
+import SignInOptionsScreen from '../screens/SignInOptionsScreen'
+import PersonalInfoScreen from '../screens/PersonalInfoScreen'
+
+
 
 const Stack = createStackNavigator()
 
@@ -13,6 +22,13 @@ function OnboardingStack() {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name={'Onboarding'} component={OnboardingScreen} />
       <Stack.Screen name={'LovedOnes'} component={LovedOnesScreen} />
+      <Stack.Screen name={'Communityscreen'} component={CommunityScreen} />
+      <Stack.Screen name={'SignUp'} component={SignUpScreen} />
+      <Stack.Screen name={'SignIn'} component={SignInScreen} />
+      <Stack.Screen name={'PasswordRecovery'} component={PasswordRecoveryScreen} />
+      <Stack.Screen name={'PasswordReset'} component={PasswordResetScreen} />
+      <Stack.Screen name={'SignInOptions'} component={SignInOptionsScreen} />
+      <Stack.Screen name={'PersonalInfo'} component={PersonalInfoScreen} />
     </Stack.Navigator>
   )
 }
