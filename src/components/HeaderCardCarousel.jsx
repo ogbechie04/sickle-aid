@@ -11,8 +11,8 @@ import HeaderCard from './HeaderCard';
 
 /**
  *
- * TODO
- * Putting individual bgWidth and bgColor for each card
+ * TODO: Putting individual bgWidth and bgColor for each card
+ *
  */
 
 const headerCardData = [

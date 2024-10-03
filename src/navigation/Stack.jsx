@@ -6,11 +6,11 @@ import SosScreen from '../screens/SosScreen'
 import OnboardingScreen from '../screens/OnboardingScreen'
 import LovedOnesScreen from '../screens/LovedOnesScreen'
 import CommunityScreen from '../screens/CommunityScreen'
-import SignUpScreen from '../screens/SignUpScreen'
-import SignInScreen from '../screens/SignInScreen'
-import PasswordRecoveryScreen from '../screens/PasswordRecoveryScreen'
+import SignUpScreen from '../screens/SignupScreen'
+import SignInScreen from '../screens/SigninScreen'
+// import PasswordRecoveryScreen from '../screens/PasswordRecoveryScreen'
 import PasswordResetScreen from '../screens/PasswordResetScreen'
-import SignInOptionsScreen from '../screens/SignInOptionsScreen'
+import SignInOptionsScreen from '../screens/SigninOptions'
 import PersonalInfoScreen from '../screens/PersonalInfoScreen'
 
 
@@ -25,7 +25,7 @@ function OnboardingStack() {
       <Stack.Screen name={'Communityscreen'} component={CommunityScreen} />
       <Stack.Screen name={'SignUp'} component={SignUpScreen} />
       <Stack.Screen name={'SignIn'} component={SignInScreen} />
-      <Stack.Screen name={'PasswordRecovery'} component={PasswordRecoveryScreen} />
+      {/* <Stack.Screen name={'PasswordRecovery'} component={PasswordRecoveryScreen} /> */}
       <Stack.Screen name={'PasswordReset'} component={PasswordResetScreen} />
       <Stack.Screen name={'SignInOptions'} component={SignInOptionsScreen} />
       <Stack.Screen name={'PersonalInfo'} component={PersonalInfoScreen} />
