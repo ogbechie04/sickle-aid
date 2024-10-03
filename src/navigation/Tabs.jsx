@@ -3,7 +3,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Image } from 'react-native';
 import homeIcon from '../../assets/icons/Home-6-white.png'
 import soundIcon from '../../assets/icons/sound.png'
-import {HomeStack, SOSStack} from './Stack';
+import commIcon from '../../assets/icons/3users.png'
+import {HomeStack, SOSStack, CommunityStack} from './Stack';
 
 /**
  *
@@ -30,6 +31,9 @@ function Tabs() {
       )}} />
       <Tab.Screen name={'SOS'} component={SOSStack} options={{ tabBarIcon: ({focused}) => (
         <Image source={soundIcon} style={{width: 25, tintColor: focused ? '#009444' : 'black', height: 25}} />
+      )}} />
+      <Tab.Screen name={'Community'} component={CommunityStack} options={{ tabBarIcon: ({focused}) => (
+        <Image source={commIcon} style={{width: 25, tintColor: focused ? '#009444' : 'black', height: 25}} />
       )}} />
     </Tab.Navigator>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text, View, StyleSheet } from 'react-native';
+import { SafeAreaView, Text, View, StyleSheet, ScrollView } from 'react-native';
 import HeaderCardCarousel from '../components/HeaderCardCarousel';
 import { Feather } from '@expo/vector-icons';
 import CommunitySection from '../components/CommunitySection';
@@ -48,12 +48,6 @@ function MainScreen({ navigation, route }) {
     appointmentTime,
     appointmentDoctorName,
   } = route.params || {};
-  console.log(
-    appointmentTitle,
-    appointmentDate,
-    appointmentTime,
-    appointmentDoctorName
-  );
 
   //*   Retrieves the stored appointment data from AsyncStorage when the component mounts
   useEffect(() => {
@@ -97,8 +91,6 @@ function MainScreen({ navigation, route }) {
     if (appointmentDoctorName) {
       setDisplayDoctorName(appointmentDoctorName);
       AsyncStorage.setItem(APPOINTMENT_DOCTOR_KEY, appointmentDoctorName);
-    } else {
-      console.log(appointmentDoctorName);
     }
   }, [
     appointmentTitle,
@@ -109,6 +101,7 @@ function MainScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={wrapper}>
+      <ScrollView>
       {/* ----- main container ----- */}
       <View style={container}>
          {/* notification bell */}
@@ -137,6 +130,7 @@ function MainScreen({ navigation, route }) {
           <HelpButton navigation={navigation} />
         </View>
       </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

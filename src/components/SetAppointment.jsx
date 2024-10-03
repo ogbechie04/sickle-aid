@@ -37,7 +37,6 @@ function SetAppointment({ navigation }) {
       appointmentTime: time.toISOString(),
       appointmentDoctorName: doctorsName,
     });
-    console.log(doctorsName)
   };
 
   const showDatePicker = () => {

@@ -35,42 +35,42 @@ function SosScreen(props) {
   } = styles;
   return (
     <SafeAreaView style={wrapper}>
-        <ScrollView>
-      <View style={container}>
-        {/* ----- HEADER SECTION ----- */}
-        <View style={headingContainer}>
-          <Feather
-            name="chevron-left"
-            size={24}
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={[baseText, headerText]}>SOS</Text>
-          <Text style={[baseText, headerBaseText]}>
-            Find a location near me
-          </Text>
-        </View>
-        {/* ----- LOCATION SECTION ----- */}
-        <View style={locationContainer}>
-          <SOSLocationCard />
-        </View>
-        <View style={divider}></View>
-        {/* ----- ADD & EDIT SECTION ----- */}
-        <View style={addEditContainer}>
-          <TouchableOpacity style={cardContainer}>
-            <View style={iconContainer}>
-              <Feather name="plus" size={32} style={addIcon} color={'#ffffff'} />
-            </View>
-            <Text style={cardText}>Add Location</Text>
-          </TouchableOpacity>
+      <ScrollView>
+        <View style={container}>
+          {/* ----- HEADER SECTION ----- */}
+          <View style={headingContainer}>
+            <Feather
+              name="chevron-left"
+              size={24}
+              onPress={() => navigation.goBack()}
+            />
+            <Text style={[baseText, headerText]}>SOS</Text>
+            <Text style={[baseText, headerBaseText]}>
+              Find a location near me
+            </Text>
+          </View>
+          {/* ----- LOCATION SECTION ----- */}
+          <View style={locationContainer}>
+            <SOSLocationCard />
+          </View>
+          <View style={divider}></View>
+          {/* ----- ADD & EDIT SECTION ----- */}
+          <View style={addEditContainer}>
+            <TouchableOpacity style={cardContainer}>
+              <View style={iconContainer}>
+                <Feather name="plus" size={32} style={addIcon} color={'#ffffff'} />
+              </View>
+              <Text style={cardText}>Add Location</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={cardContainer}>
-            <View style={iconContainer}>
-              <Feather name="edit-2" size={24} style={editIcon} color={'#ffffff'} />
-            </View>
-            <Text style={cardText}>Edit Location</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={cardContainer}>
+              <View style={iconContainer}>
+                <Feather name="edit-2" size={24} style={editIcon} color={'#ffffff'} />
+              </View>
+              <Text style={cardText}>Edit Location</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
       </ScrollView>
     </SafeAreaView>
   );

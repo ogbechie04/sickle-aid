@@ -5,6 +5,7 @@ import SetAppointment from '../components/SetAppointment'
 import SosScreen from '../screens/SosScreen'
 import OnboardingScreen from '../screens/OnboardingScreen'
 import LovedOnesScreen from '../screens/LovedOnesScreen'
+import CommunityScreen from '../screens/CommunityScreen'
 
 const Stack = createStackNavigator()
 
@@ -36,4 +37,12 @@ function SOSStack() {
   )
 }
 
-export { OnboardingStack, HomeStack, SOSStack }
+function CommunityStack() {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name={'CommunityScreen'} component={CommunityScreen} />
+    </Stack.Navigator>
+  )
+}
+
+export { OnboardingStack, HomeStack, SOSStack, CommunityStack }
