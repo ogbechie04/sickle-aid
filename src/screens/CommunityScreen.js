@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const LovedOnesScreen = () => {
+const CommunityScreen = () => {
   const navigation = useNavigation();
 
   return (
@@ -18,17 +18,16 @@ const LovedOnesScreen = () => {
       <View style={styles.content}>
         <Image
           // eslint-disable-next-line no-undef
-          source={require('../../assets/lovedones.png')}
+          source={require('../../assets/communitypic.png')}
           style={styles.image}
         />
-        <Text style={styles.title}>LOVED ONES</Text>
+        <Text style={styles.title}>COMMUNITY</Text>
         <Text style={styles.description}>
-          Loved one of a PSC, would receive real-time updates on their condition
-          and location during a crisis.
+          A dedicated community platform with secure chat functionalities.
         </Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Communityscreen')}
+          onPress={() => navigation.navigate('SignUp')}
         >
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
@@ -43,8 +42,8 @@ const LovedOnesScreen = () => {
       </View>
       <View style={styles.pagination}>
         <View style={styles.paginationDot} />
-        <View style={[styles.paginationDot, styles.activeDot]} />
         <View style={styles.paginationDot} />
+        <View style={[styles.paginationDot, styles.activeDot]} />
       </View>
     </SafeAreaView>
   );
@@ -110,4 +109,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LovedOnesScreen;
+export default CommunityScreen;
