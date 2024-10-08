@@ -11,8 +11,6 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tabs />
-      {<HeaderCard />}
-      {<HeaderCardCarousel />}
     </NavigationContainer>
   )
 }

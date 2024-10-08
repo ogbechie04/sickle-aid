@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+// import { Picker } from '@react-native-picker/picker';
+import { Picker } from 'react-native-web';
 
 const SignInOptionsScreen = () => {
   const [selectedRelation, setSelectedRelation] = useState('placeholder');
