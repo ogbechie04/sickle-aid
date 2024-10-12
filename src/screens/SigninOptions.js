@@ -1,19 +1,21 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-// import { Picker } from '@react-native-picker/picker';
-import { Picker } from 'react-native-web';
+import React, { useState } from 'react'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { Picker } from '@react-native-picker/picker' // Use this instead of 'react-native-web'
 
 const SignInOptionsScreen = () => {
-  const [selectedRelation, setSelectedRelation] = useState('placeholder');
+  const navigation = useNavigation()
+  const [selectedRelation, setSelectedRelation] = useState('')
 
   const handlePickerChange = (itemValue) => {
-    setSelectedRelation(itemValue);
-  };
+    setSelectedRelation(itemValue)
+  }
 
   const handleSubmit = () => {
     // Handle the submit action
-    console.log(`Selected Relation: ${selectedRelation}`);
-  };
+    // console.log(`Selected Relation: ${selectedRelation}`)
+    navigation.navigate('MainApp')
+  }
 
   return (
     <View style={styles.container}>
@@ -30,7 +32,8 @@ const SignInOptionsScreen = () => {
           style={styles.picker}
           itemStyle={styles.pickerItem}
         >
-          <Picker.Item label="Loved Ones" value="placeholder" color="#888" />
+          <Picker.Item label="Select Relation" value="" color="#888" />
+          <Picker.Item label="Loved Ones" value="Loved Ones" />
           <Picker.Item label="Wife" value="Wife" />
           <Picker.Item label="Husband" value="Husband" />
           <Picker.Item label="Dad" value="Dad" />
@@ -46,8 +49,8 @@ const SignInOptionsScreen = () => {
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -55,13 +58,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     padding: 20,
-    marginTop: 40.58,
+    marginTop: 40.58
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: 'black',
+    color: 'black'
   },
   PSC: {
     width: '100%',
@@ -72,11 +75,11 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     marginTop: 50,
     paddingTop: 10,
-    paddingLeft: 10,
+    paddingLeft: 10
   },
   PSCText: {
     color: 'black',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   pickerContainer: {
     width: '100%',
@@ -85,13 +88,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: 'black',
     marginBottom: 50,
-    height: 50,
+    height: 50
   },
   picker: {
-    height: 50,
+    height: 50
   },
   pickerItem: {
-    color: 'palegoldenred',
+    color: 'palegoldenred'
   },
   submitButton: {
     backgroundColor: 'forestgreen',
@@ -99,12 +102,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     width: '100%',
     borderRadius: 71,
-    alignItems: 'center',
+    alignItems: 'center'
   },
   submitButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
-  },
-});
+    fontSize: 18
+  }
+})
 
-export default SignInOptionsScreen;
+export default SignInOptionsScreen

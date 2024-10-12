@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     height: 84.6272,
     borderWidth: 4.922,
     borderColor: '#009444',
-    borderRadius: '50%',
+    borderRadius: 50,
   },
   helpText: {
     fontFamily: 'Inter',

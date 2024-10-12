@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState } from 'react';
+import React, { useState } from 'react'
 import {
   View,
   Text,
@@ -7,26 +7,27 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
+  SafeAreaView
+} from 'react-native'
+import { Feather } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 
 const SignInScreen = () => {
-  const navigation = useNavigation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const navigation = useNavigation()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleSignIn = () => {
     // Implement sign In logic
-    console.log('Sign In pressed');
-  };
+    // console.log('Sign In pressed')
+    navigation.navigate('MainApp')
+  }
 
   const handleGoogleSignIn = () => {
     // Implement Google sign in logic
-    console.log('Google Sign In pressed');
-  };
+    console.log('Google Sign In pressed')
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -69,7 +70,7 @@ const SignInScreen = () => {
         <Text style={styles.signInButtonText}>Sign In</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('PasswordRecovery')}>
+      <TouchableOpacity onPress={() => navigation.navigate('PasswordReset')}>
         <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
 
@@ -87,27 +88,27 @@ const SignInScreen = () => {
         <Text style={styles.googleButtonText}>Continue With Google</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 24,
     backgroundColor: 'white',
-    marginTop: 40.58,
+    marginTop: 40.58
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 47.2,
+    marginBottom: 47.2
   },
   subtitle: {
     fontSize: 13,
     color: 'black',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   inputContainer: {
     flexDirection: 'row',
@@ -115,14 +116,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: 'lightgray',
-    borderRadius: 8,
+    borderRadius: 8
   },
   input: {
     flex: 1,
-    padding: 10,
+    padding: 10
   },
   eyeIcon: {
-    padding: 10,
+    padding: 10
   },
   signInButton: {
     backgroundColor: 'forestgreen',
@@ -130,29 +131,29 @@ const styles = StyleSheet.create({
     borderRadius: 71,
     alignItems: 'center',
     marginBottom: 20,
-    marginTop: 30,
+    marginTop: 30
   },
   signInButtonText: {
     color: 'white',
-    fontWeight: 'bold',
+    fontWeight: 'bold'
   },
   forgotPassword: {
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 20
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'black',
+    backgroundColor: 'black'
   },
   dividerText: {
     marginHorizontal: 10,
-    color: 'black',
+    color: 'black'
   },
   googleButton: {
     flexDirection: 'row',
@@ -161,12 +162,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'lightgray',
     padding: 15,
-    borderRadius: 5,
+    borderRadius: 5
   },
   googleButtonText: {
     color: 'black',
-    marginLeft: 10,
-  },
-});
+    marginLeft: 10
+  }
+})
 
-export default SignInScreen;
+export default SignInScreen
