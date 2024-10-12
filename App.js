@@ -116,7 +116,7 @@ import {
   Inter_600SemiBold,
   Inter_700Bold
 } from '@expo-google-fonts/inter'
-import { RootNavigator } from './src/navigation/RootNavigation'
+import { RootNavigator } from './src/navigation/rootNavigation'
 
 const App = () => {
   const [fontsLoaded] = useFonts({
