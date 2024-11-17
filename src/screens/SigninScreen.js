@@ -7,28 +7,78 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView
+  SafeAreaView,
+  Alert,
+  ActivityIndicator
 } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import API_URL from '../config/api'
 
 const SignInScreen = () => {
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const[loading, setLoading] = useState(false);
 
-  const handleSignIn = () => {
-    // Implement sign In logic
-    // console.log('Sign In pressed')
-    navigation.navigate('MainApp')
-  }
-
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Email and password are required.');
+      return;
+    }
+  
+    try {
+      setLoading(true);
+  
+      //console.log('Request:', {
+        //url: `${API_URL}/signin`,
+        //payload: { email, password },
+      //});
+  
+      const response = await axios.post(`${API_URL}/signin`, {
+        email,
+        password,
+      });
+  
+      // Log full response
+      console.log('Response:', response);
+  
+      const result = response.data;
+      setLoading(false);
+  
+      if (response.status === 200) {
+        await AsyncStorage.setItem('userEmail', email);
+        alert('Successfully signed in', response.data.message)
+        navigation.navigate('MainApp', { email }) 
+      } else {
+        Alert.alert('Error', result.message || 'Login failed. Please try again.');
+      }
+    } catch (error) {
+      setLoading(false);
+  
+      console.error('Login Error:', {
+        message: error.message,
+        response: error.response?.data,
+      });
+  
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'An error occurred. Please try again later.'
+      );
+    }
+  };
+  
   const handleGoogleSignIn = () => {
-    // Implement Google sign in logic
-    console.log('Google Sign In pressed')
-  }
+    // Implement Google sign-in logic
+    console.log('Google Sign In pressed');
+  };
 
+
+  
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
@@ -66,8 +116,16 @@ const SignInScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-        <Text style={styles.signInButtonText}>Sign In</Text>
+      <TouchableOpacity
+        style={styles.signInButton}
+        onPress={handleSignIn}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.signInButtonText}>Sign In</Text>
+        )}
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => navigation.navigate('PasswordReset')}>
@@ -88,8 +146,8 @@ const SignInScreen = () => {
         <Text style={styles.googleButtonText}>Continue With Google</Text>
       </TouchableOpacity>
     </SafeAreaView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

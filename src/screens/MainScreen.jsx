@@ -36,6 +36,7 @@ function MainScreen({ navigation, route }) {
   const [displayDate, setDisplayDate] = useState(null);
   const [displayTime, setDisplayTime] = useState(null);
   const [displayDoctorName, setDisplayDoctorName] = useState('');
+  const [userEmail, setUserEmail] = useState('');
 
   const APPOINTMENT_TITLE_KEY = 'appointmentTitle';
   const APPOINTMENT_DATE_KEY = 'appointmentDate';
@@ -107,6 +108,21 @@ function MainScreen({ navigation, route }) {
     appointmentDoctorName,
   ]);
 
+  useEffect(() => {
+    const getEmail = async () => {
+      try {
+        const email = await AsyncStorage.getItem('userEmail');
+        if (email) {
+          setUserEmail(email);
+          console.log('Email retrieved from AsyncStorage:', email);
+        }
+      } catch (error) {
+        console.error('Error retrieving email:', error);
+      }
+    };
+    getEmail();
+  }, []);
+
   return (
     <SafeAreaView style={wrapper}>
       {/* ----- main container ----- */}
@@ -118,7 +134,7 @@ function MainScreen({ navigation, route }) {
         {/* ----- header content ----- */}
         <View style={headerContainer}>
           <Text style={[baseText, headerText]}>SickleAid</Text>
-          <Text style={[baseText, bodyText]}>Good Morning Gift</Text>
+          <Text style={[baseText, bodyText]}>Good Morning {userEmail} </Text>
         </View>
         <View style={carouselContainer}>
           <HeaderCardCarousel />

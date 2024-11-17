@@ -110,10 +110,16 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView
+  SafeAreaView,
+  Alert,
+  ActivityIndicator
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/Feather' // Make sure to install this package
+import axios from 'axios'
+import PasswordStrengthBar from 'react-password-strength-bar';
+
+import API_URL from '../config/api'
 
 const SignUpScreen = () => {
   const navigation = useNavigation()
@@ -122,6 +128,44 @@ const SignUpScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [loading, setLoading] = useState(false) 
+
+
+  const handleSignUp = async () => {
+    if (!email || !password || !confirmPassword) {
+      Alert.alert('Error', 'All fields are required!')
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Incorrect password')
+      return;
+    }
+
+    try {
+      setLoading(true) // loading spinner start
+
+      const data = {
+        email,
+        password,
+        confirmPassword
+      };
+      //console.log("Request data:", data);
+
+      const response = await axios.post(`${API_URL}/signup`, data);
+      //console.log(response)
+
+    // On success
+    Alert.alert('Success', response.data.message)
+    navigation.navigate('SignInOptions') // Redirect to Signin options screen
+  } catch (error) {
+    const message = error.response?.data?.message || 'An error occurred'
+    Alert.alert('Sign-Up Failed', message)
+    console.log(message)
+  } finally {
+    setLoading(false) // Stop loading spinner
+  }
+}
 
   return (
     <SafeAreaView style={styles.container}>
@@ -137,10 +181,11 @@ const SignUpScreen = () => {
         />
       </View>
 
+      <View>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Create Password"
+          placeholder="Create a Password"
           value={password}
           onChangeText={setPassword}
           secureTextEntry={!showPassword}
@@ -155,6 +200,8 @@ const SignUpScreen = () => {
             color="gray"
           />
         </TouchableOpacity>
+      </View>
+      <PasswordStrengthBar password={password} />
       </View>
 
       <View style={styles.inputContainer}>
@@ -179,9 +226,14 @@ const SignUpScreen = () => {
 
       <TouchableOpacity
         style={styles.signUpButton}
-        onPress={() => navigation.navigate('SignInOptions')}
+        onPress={handleSignUp}
+        disabled={loading}
       >
-        <Text style={styles.signUpButtonText}>Sign Up</Text>
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.signUpButtonText}>Sign Up</Text>
+        )}
       </TouchableOpacity>
 
       <View style={styles.signInContainer}>
