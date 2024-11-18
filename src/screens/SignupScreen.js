@@ -116,11 +116,10 @@ import {
   ActivityIndicator
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import Icon from 'react-native-vector-icons/Feather' // Make sure to install this package
+import Icon from 'react-native-vector-icons/Feather' 
 import axios from 'axios'
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
-
 
 import API_URL from '../config/api'
 
@@ -146,16 +145,15 @@ const SignUpScreen = () => {
 
     try {
       setLoading(true);
-      await GoogleSignin.hasPlayServices();  // Ensure Google Play services are available
-      const userInfo = await GoogleSignin.signIn();  // Sign in using Google
+      await GoogleSignin.hasPlayServices(); 
+      const userInfo = await GoogleSignin.signIn();  
   
-      // Store user info in AsyncStorage (email, token, etc.)
       await AsyncStorage.setItem('userEmail', userInfo.user.email);
       
       console.log('Google Sign-In Success:', userInfo);
       setLoading(false);
   
-      // Send email to your backend API for processing
+      
       const response = await axios.post(`${API_URL}/signin/google`, {
         email: userInfo.user.email,
         name: userInfo.user.name, 
@@ -163,11 +161,10 @@ const SignUpScreen = () => {
       console.log(response)
   
       if (response.status === 200) {
-        // Successfully signed in or registered
+       
         alert('Successfully signed in');
         
-        // Store user data or JWT token in AsyncStorage (if provided by your API)
-        await AsyncStorage.setItem('userToken', response.data.token);  // Example if you're using JWT tokens
+        await AsyncStorage.setItem('userToken', response.data.token); 
         
         // Navigate to MainApp
         navigation.navigate('MainApp', { email: userInfo.user.email });
