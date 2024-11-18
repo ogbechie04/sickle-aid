@@ -112,6 +112,7 @@ const SignInScreen = () => {
         await AsyncStorage.setItem('userEmail', email);
         alert('Successfully signed in', response.data.message)
         navigation.navigate('MainApp', { email }) 
+        //email passed with async to main-app directly from sign-in
       } else {
         Alert.alert('Error', result.message || 'Login failed. Please try again.');
       }

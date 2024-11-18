@@ -120,6 +120,7 @@ import Icon from 'react-native-vector-icons/Feather'
 import axios from 'axios'
 import PasswordStrengthBar from 'react-password-strength-bar';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import API_URL from '../config/api'
 
@@ -209,15 +210,14 @@ const SignUpScreen = () => {
 
       const response = await axios.post(`${API_URL}/signup`, data);
       //console.log(response)
-
+      await AsyncStorage.setItem('userEmail', email);
       Alert.alert('Success', response.data.message);
-      navigation.navigate('SignInOptions'); // Redirect to Sign-In Options screen
+      navigation.navigate('SignInOptions', { email }); // Redirect to Sign-In Options screen
     } catch (error) {
       const message = error.response?.data?.message || 'An error occurred';
       if (message === "This email is already registered") {
         // Handle specific case for already,registered email, should navigate to signin here
         Alert.alert(
-          'Registration Failed',
           'The email address is already registered. Please sign in instead.'
         );
         navigation.navigate('SignIn'); // Navigate to sign-in screen

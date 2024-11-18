@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { Picker } from '@react-native-picker/picker' // Use this instead of 'react-native-web'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const SignInOptionsScreen = () => {
   const navigation = useNavigation()
@@ -11,11 +13,18 @@ const SignInOptionsScreen = () => {
     setSelectedRelation(itemValue)
   }
 
-  const handleSubmit = () => {
-    // Handle the submit action
-    // console.log(`Selected Relation: ${selectedRelation}`)
-    navigation.navigate('MainApp')
-  }
+  const handleSubmit = async () => {
+    try {
+      const email = await AsyncStorage.getItem('userEmail');
+      if (email) {
+        navigation.navigate('MainApp', { email });
+      } else {
+        console.error('Email not found in AsyncStorage');
+      }
+    } catch (error) {
+      console.error('Error retrieving email from AsyncStorage:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
