@@ -24,18 +24,18 @@ import API_URL from '../config/api'
 
 const SignInScreen = () => {
 
-  useEffect(() => {
-    GoogleSignin.configure({
-      webClientId: '817053433167-vnk3fq2o6v0kn50uh6g63u2mg5ohmftl.apps.googleusercontent.com', 
-      offlineAccess: false,  
-    });
-  }, []);
-
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const[loading, setLoading] = useState(false);
+
+/*   useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '817053433167-vnk3fq2o6v0kn50uh6g63u2mg5ohmftl.apps.googleusercontent.com', 
+      offlineAccess: false,  
+    });
+  }, []);
 
 
 
@@ -81,7 +81,7 @@ const SignInScreen = () => {
         Alert.alert('Error', error.message || 'An error occurred. Please try again later.');
       }
     }
-  };
+  }; */
 
   const handleSignIn = async () => {
     if (!email || !password) {

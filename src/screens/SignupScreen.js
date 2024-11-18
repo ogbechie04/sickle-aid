@@ -134,15 +134,15 @@ const SignUpScreen = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false) 
 
-   useEffect(() => {
+/*    useEffect(() => {
     GoogleSignin.configure({
       webClientId: '817053433167-vnk3fq2o6v0kn50uh6g63u2mg5ohmftl.apps.googleusercontent.com', 
       offlineAccess: false,  
     });
-  }, []);
+  }, []); */
 
 
-  const handleGoogleSignIn = async () => {
+/*   const handleGoogleSignIn = async () => {
 
     try {
       setLoading(true);
@@ -184,7 +184,7 @@ const SignUpScreen = () => {
       }
     }
   };
-
+ */
   
 
   const handleSignUp = async () => {
