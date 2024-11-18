@@ -210,17 +210,26 @@ const SignUpScreen = () => {
       const response = await axios.post(`${API_URL}/signup`, data);
       //console.log(response)
 
-    // On success
-      Alert.alert('Success', response.data.message)
-      navigation.navigate('SignInOptions') // Redirect to Signin options screen
-  } catch (error) {
-    const message = error.response?.data?.message || 'An error occurred'
-    Alert.alert('Sign-Up Failed', message)
-    console.log(message)
-  } finally {
-    setLoading(false) // Stop loading spinner
-  }
-}
+      Alert.alert('Success', response.data.message);
+      navigation.navigate('SignInOptions'); // Redirect to Sign-In Options screen
+    } catch (error) {
+      const message = error.response?.data?.message || 'An error occurred';
+      if (message === "This email is already registered") {
+        // Handle specific case for already,registered email, should navigate to signin here
+        Alert.alert(
+          'Registration Failed',
+          'The email address is already registered. Please sign in instead.'
+        );
+        navigation.navigate('SignIn'); // Navigate to sign-in screen
+      } else {
+        // Handle other errors
+        Alert.alert('Sign-Up Failed', message);
+      }
+      console.error('Error during sign-up:', message); // Log error for debugging
+    } finally {
+      setLoading(false); // Stop loading spinner
+    }
+  };
 
 
   return (
