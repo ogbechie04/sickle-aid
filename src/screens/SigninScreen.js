@@ -1,10 +1,9 @@
 /* eslint-disable no-undef */
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Text,
   Image,
-  Button,
   TextInput,
   TouchableOpacity,
   StyleSheet,
@@ -14,9 +13,9 @@ import {
 } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
-import axios from 'axios'
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 import API_URL from '../config/api'
 
@@ -195,7 +194,6 @@ const SignInScreen = () => {
 
       <TouchableOpacity onPress={handleGoogleSignIn} disabled={loading} style={styles.googleButton}>
       <Image
-          // eslint-disable-next-line no-undef
           source={require('../../assets/Googlelogo.png')}
           style={styles.googleLogo}
         />
@@ -285,4 +283,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default SignInScreen
+export default SignInScreen;

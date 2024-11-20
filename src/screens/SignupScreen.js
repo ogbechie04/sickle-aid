@@ -102,11 +102,10 @@
 //   );
 // };
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   View,
   Text,
-  Button,
   Image,
   TextInput,
   TouchableOpacity,
@@ -119,7 +118,7 @@ import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/Feather' 
 import axios from 'axios'
 import PasswordStrengthBar from 'react-password-strength-bar';
-import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+// import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import API_URL from '../config/api'
@@ -314,7 +313,7 @@ const SignUpScreen = () => {
         <View style={styles.orLine} />
       </View>
 
-      <TouchableOpacity onPress={handleGoogleSignIn} disabled={loading} style={styles.googleButton}>
+      <TouchableOpacity /*onPress={handleGoogleSignIn} */ disabled={loading} style={styles.googleButton}>
       <Image
           // eslint-disable-next-line no-undef
           source={require('../../assets/Googlelogo.png')}
