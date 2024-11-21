@@ -56,15 +56,17 @@
 
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import Tabs from './Tabs';  // Import your Tabs component
+import Tabs from './Tabs'; 
 import OnboardingScreen from '../screens/OnboardingScreen';
 import LovedOnesScreen from '../screens/LovedOnesScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import SignInScreen from '../screens/SigninScreen';
-import PasswordResetScreen from '../screens/PasswordResetScreen';
+import CheckEmail from '../screens/checkEmail';
+import UpdatePassword from '../screens/updatePassword';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -76,7 +78,8 @@ function MainStack() {
       <Stack.Screen name="Communityscreen" component={CommunityScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="PasswordReset" component={PasswordResetScreen} />
+      <Stack.Screen name="PasswordReset" component={UpdatePassword} />
+      <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
       <Stack.Screen name="MainApp" component={Tabs} />

@@ -7,28 +7,134 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView
+  SafeAreaView,
+  Alert,
+  ActivityIndicator
 } from 'react-native'
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+// import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+
+
+import API_URL from '../config/api'
+
+
 
 const SignInScreen = () => {
+
   const navigation = useNavigation()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const[loading, setLoading] = useState(false);
 
-  const handleSignIn = () => {
-    // Implement sign In logic
-    // console.log('Sign In pressed')
-    navigation.navigate('MainApp')
-  }
+/*   useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: '817053433167-vnk3fq2o6v0kn50uh6g63u2mg5ohmftl.apps.googleusercontent.com', 
+      offlineAccess: false,  
+    });
+  }, []);
 
-  const handleGoogleSignIn = () => {
-    // Implement Google sign in logic
-    console.log('Google Sign In pressed')
-  }
 
+
+  const handleGoogleSignIn = async () => {
+
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices();  
+      const userInfo = await GoogleSignin.signIn();  
+  
+ 
+      await AsyncStorage.setItem('userEmail', userInfo.user.email);
+      
+      console.log('Google Sign-In Success:', userInfo);
+      setLoading(false);
+  
+      const response = await axios.post(`${API_URL}/signin/google`, {
+        email: userInfo.user.email,
+        name: userInfo.user.name, 
+        
+      });
+  
+      if (response.status === 200) {
+        
+        alert('Successfully signed in');
+        
+       
+        await AsyncStorage.setItem('userToken', response.data.token);  
+        
+        // Navigate to MainApp
+        navigation.navigate('MainApp', { email: userInfo.user.email });
+      } else {
+        Alert.alert('Error', response.data.message || 'Login failed. Please try again.');
+      }
+    } catch (error) {
+      setLoading(false);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        Alert.alert('Error', 'User cancelled the sign-in process');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('Error', 'Sign-in is in progress');
+      } else {
+        console.error('Google Sign-In Error:', error);
+        Alert.alert('Error', error.message || 'An error occurred. Please try again later.');
+      }
+    }
+  }; */
+
+  const handleSignIn = async () => {
+    if (!email || !password) {
+      Alert.alert('Error', 'Email and password are required.');
+      return;
+    }
+  
+    try {
+      setLoading(true);
+  
+      //console.log('Request:', {
+        //url: `${API_URL}/signin`,
+        //payload: { email, password },
+      //});
+  
+      const response = await axios.post(`${API_URL}/signin`, {
+        email,
+        password,
+      });
+  
+      // Log full response
+      console.log('Response:', response);
+  
+      const result = response.data;
+      setLoading(false);
+  
+      if (response.status === 200) {
+        await AsyncStorage.setItem('userEmail', email);
+        alert('Successfully signed in', response.data.message)
+        navigation.navigate('MainApp', { email }) 
+        //email passed with async to main-app directly from sign-in
+      } else {
+        Alert.alert('Error', result.message || 'Login failed. Please try again.');
+      }
+    } catch (error) {
+      setLoading(false);
+  
+      console.error('Login Error:', {
+        message: error.message,
+        response: error.response?.data,
+      });
+  
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'An error occurred. Please try again later.'
+      );
+    }
+  };
+  
+
+
+  
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
@@ -66,11 +172,19 @@ const SignInScreen = () => {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.signInButton} onPress={handleSignIn}>
-        <Text style={styles.signInButtonText}>Sign In</Text>
+      <TouchableOpacity
+        style={styles.signInButton}
+        onPress={handleSignIn}
+        disabled={loading}
+      >
+        {loading ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          <Text style={styles.signInButtonText}>Sign In</Text>
+        )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('PasswordReset')}>
+      <TouchableOpacity onPress={() => navigation.navigate('emailcheck')}>
         <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
 
@@ -80,16 +194,18 @@ const SignInScreen = () => {
         <View style={styles.dividerLine} />
       </View>
 
-      <TouchableOpacity
-        style={styles.googleButton}
-        onPress={handleGoogleSignIn}
-      >
-        <Image source={require('../../assets/Googlelogo.png')} />
-        <Text style={styles.googleButtonText}>Continue With Google</Text>
-      </TouchableOpacity>
+      <TouchableOpacity disabled={loading} style={styles.googleButton}>
+      <Image
+          source={require('../../assets/Googlelogo.png')}
+          style={styles.googleLogo}
+        />
+        <Text>Sign in with Google</Text>
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+    </TouchableOpacity>
     </SafeAreaView>
-  )
-}
+
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -170,4 +286,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default SignInScreen
+export default SignInScreen;
