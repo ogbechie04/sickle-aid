@@ -17,6 +17,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
+
+
 import API_URL from '../config/api'
 
 
@@ -192,7 +194,7 @@ const SignInScreen = () => {
         <View style={styles.dividerLine} />
       </View>
 
-      <TouchableOpacity onPress={handleGoogleSignIn} disabled={loading} style={styles.googleButton}>
+      <TouchableOpacity disabled={loading} style={styles.googleButton}>
       <Image
           source={require('../../assets/Googlelogo.png')}
           style={styles.googleLogo}
@@ -201,6 +203,7 @@ const SignInScreen = () => {
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
     </TouchableOpacity>
     </SafeAreaView>
+
   );
 };
 

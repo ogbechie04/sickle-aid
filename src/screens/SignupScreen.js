@@ -117,11 +117,14 @@ import {
 import { useNavigation } from '@react-navigation/native'
 import Icon from 'react-native-vector-icons/Feather' 
 import axios from 'axios'
-import PasswordStrengthBar from 'react-password-strength-bar';
 // import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ToastManager, { Toast } from 'toastify-react-native'
+
+
 
 import API_URL from '../config/api'
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter'
 
 const SignUpScreen = () => {
 
@@ -131,7 +134,8 @@ const SignUpScreen = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [loading, setLoading] = useState(false) 
+  const [loading, setLoading] = useState(false)
+  const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
 
 /*    useEffect(() => {
     GoogleSignin.configure({
@@ -184,55 +188,70 @@ const SignUpScreen = () => {
     }
   };
  */
+
+  
   
 
-  const handleSignUp = async () => {
-    if (!email || !password || !confirmPassword) {
-      Alert.alert('Error', 'All fields are required!')
-      return;
-    }
+const handleSignUp = async () => {
+  if (!email || !password || !confirmPassword) {
+    Toast.error('Error')
+    return;
+  }
 
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Incorrect password')
-      return;
-    }
+  if (password !== confirmPassword) {
+    Toast.warn('Passwords must match');
+    return;
+  }
 
-    try {
-      setLoading(true) // loading spinner start
+  try {
+    setLoading(true)
 
-      const data = {
-        email,
-        password,
-        confirmPassword
-      };
-      //console.log("Request data:", data);
+    const data = {
+      email,
+      password,
+      confirmPassword
+    };
 
-      const response = await axios.post(`${API_URL}/signup`, data);
-      //console.log(response)
-      await AsyncStorage.setItem('userEmail', email);
-      Alert.alert('Success', response.data.message);
-      navigation.navigate('SignInOptions', { email }); // Redirect to Sign-In Options screen
-    } catch (error) {
+    const response = await axios.post(`${API_URL}/signup`, data);
+    await AsyncStorage.setItem('userEmail', email);
+    Alert.alert('Success', response.data.message);
+    navigation.navigate('SignInOptions', { email });
+  } catch (error) {
+    // Check for validation errors
+    const validationErrors = error.response?.data?.errors;
+    
+    if (validationErrors && validationErrors.length > 0) {
+      // Display all validation error messages
+      const errorMessage = validationErrors.map(err => err.msg).join('\n');
+      Alert.alert('Validation Error', errorMessage);
+    } else {
       const message = error.response?.data?.message || 'An error occurred';
+    
       if (message === "This email is already registered") {
-        // Handle specific case for already,registered email, should navigate to signin here
         Alert.alert(
-          'The email address is already registered. Please sign in instead.'
+          'The email address is already registered. Please Sign In.'
         );
-        navigation.navigate('SignIn'); // Navigate to sign-in screen
+        navigation.navigate('SignIn');
       } else {
-        // Handle other errors
         Alert.alert('Sign-Up Failed', message);
       }
-      console.error('Error during sign-up:', message); // Log error for debugging
-    } finally {
-      setLoading(false); // Stop loading spinner
     }
-  };
+    console.error('Error during sign-up:', error.response?.data);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
   return (
     <SafeAreaView style={styles.container}>
+      <ToastManager 
+      width={300}
+      position="top"
+      hasBackdrop={true}
+      backdropOpacity={0.5}
+      textStyle={styles.googleButtonText}
+      />
       <Text style={styles.title}>Sign Up</Text>
 
       <View style={styles.inputContainer}>
@@ -253,6 +272,8 @@ const SignUpScreen = () => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry={!showPassword}
+          onFocus={() => setIsPasswordInputFocused(true)}
+          onBlur={() => setIsPasswordInputFocused(false)}
         />
         <TouchableOpacity
           onPress={() => setShowPassword(!showPassword)}
@@ -265,7 +286,7 @@ const SignUpScreen = () => {
           />
         </TouchableOpacity>
       </View>
-      <PasswordStrengthBar password={password} />
+
       </View>
 
       <View style={styles.inputContainer}>
@@ -287,6 +308,11 @@ const SignUpScreen = () => {
           />
         </TouchableOpacity>
       </View>
+
+      <View>
+ {isPasswordInputFocused && (
+        <PasswordStrengthMeter password={password} />
+      )}      </View>
 
       <TouchableOpacity
         style={styles.signUpButton}
