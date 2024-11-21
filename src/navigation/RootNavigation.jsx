@@ -12,9 +12,10 @@ import LovedOnesScreen from '../screens/LovedOnesScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import SignInScreen from '../screens/SigninScreen';
-import PasswordResetScreen from '../screens/PasswordResetScreen';
+import UpdatePassword from '../screens/updatePassword';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
+import CheckEmail from '../screens/checkEmail';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
@@ -97,7 +98,8 @@ function RootNavigator() {
       <Stack.Screen name="Communityscreen" component={CommunityScreen} />
       <Stack.Screen name="SignUp" component={SignUpScreen} />
       <Stack.Screen name="SignIn" component={SignInScreen} />
-      <Stack.Screen name="PasswordReset" component={PasswordResetScreen} />
+      <Stack.Screen name="PasswordReset" component={UpdatePassword} />
+      <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
       <Stack.Screen name="MainApp" component={TabNavigator} />

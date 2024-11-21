@@ -184,7 +184,7 @@ const SignInScreen = () => {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('PasswordReset')}>
+      <TouchableOpacity onPress={() => navigation.navigate('emailcheck')}>
         <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
 
