@@ -6,7 +6,7 @@ import axios from 'axios';
 import API_URL from '../config/api'
 
 
-const checkEmail = () => {
+const CheckEmail = () => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default checkEmail;
+export default CheckEmail;

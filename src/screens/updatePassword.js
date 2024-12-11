@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import axios from 'axios';  
-import { useNavigation } from '@react-navigation/native'
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 
 import API_URL from '../config/api';
-import PasswordStrengthMeter from '../components/PasswordStrengthMeter'
+import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
 
-
-const updatePassword = ({ route }) => {
-  const navigation = useNavigation()
+const UpdatePassword = ({ route }) => {
+  const navigation = useNavigation();
 
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,56 +25,61 @@ const updatePassword = ({ route }) => {
   const [loading, setLoading] = useState(false);
   const [isPasswordInputFocused, setIsPasswordInputFocused] = useState(false);
 
-  
-
-  const email = route.params?.email; // Get the email passed in params
+  const email = route.params?.email;
 
   const handleProceed = async () => {
     if (newPassword !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match.');
+      showAlert('Error', 'Passwords do not match.');
       return;
     }
 
     if (newPassword.length < 6) {
-      Alert.alert('Error', 'Password must be at least 6 characters long.');
+      showAlert('Error', 'Password must be at least 6 characters long.');
       return;
     }
 
     setLoading(true);
 
-      try {
-      const response = await axios.post(`${API_URL}/update-password`, {
-        email,
-        newPassword,
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+    try {
+      const response = await axios.post(
+        `${API_URL}/update-password`,
+        { email, newPassword },
+        {
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
 
       const data = response.data;
 
       if (response.status === 200) {
-        Alert.alert('Success', 'Password updated successfully.');
-        console.log(response)
-        navigation.navigate ('SignIn')
-        // Optionally navigate to login or success screen
+        showAlert('Success', 'Password updated successfully.');
+        navigation.navigate('SignIn');
       } else {
-        Alert.alert('Error', data.message || 'Something went wrong. Please try again.');
+        showAlert(
+          'Error',
+          data?.message || 'Something went wrong. Please try again.'
+        );
       }
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Unable to connect to the server. Please try again.');
+      showAlert('Error', 'Unable to connect to the server. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const togglePasswordVisibility = (setter) => () => setter((prev) => !prev);
+  const showAlert = (title, message) => Alert.alert(title, message);
+  const handlePasswordFocus = () => setIsPasswordInputFocused(true);
+  const handlePasswordBlur = () => setIsPasswordInputFocused(false);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Password Recovery</Text>
-      {/* Correct way to include the email */}
-      <Text style={styles.subtitle}>Create a new password for {email}</Text>
+      <Text style={styles.subtitle}>
+        Create a new password for{' '}
+        <Text style={{ fontWeight: 'bold' }}>{email}</Text>
+      </Text>
 
       <View style={styles.passwordContainer}>
         <TextInput
@@ -76,11 +88,18 @@ const updatePassword = ({ route }) => {
           value={newPassword}
           onChangeText={setNewPassword}
           secureTextEntry={!showNewPassword}
-              onFocus={() => setIsPasswordInputFocused(true)}
-          onBlur={() => setIsPasswordInputFocused(false)}
+          onFocus={handlePasswordFocus}
+          onBlur={handlePasswordBlur}
         />
-        <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)} style={styles.eyeIcon}>
-          <Feather name={showNewPassword ? 'eye' : 'eye-off'} size={24} color="gray" />
+        <TouchableOpacity
+          onPress={togglePasswordVisibility(setShowNewPassword)}
+          style={styles.eyeIcon}
+        >
+          <Feather
+            name={showNewPassword ? 'eye' : 'eye-off'}
+            size={24}
+            color="gray"
+          />
         </TouchableOpacity>
       </View>
 
@@ -92,17 +111,27 @@ const updatePassword = ({ route }) => {
           onChangeText={setConfirmPassword}
           secureTextEntry={!showConfirmPassword}
         />
-        <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)} style={styles.eyeIcon}>
-          <Feather name={showConfirmPassword ? 'eye' : 'eye-off'} size={24} color="gray" />
+        <TouchableOpacity
+          onPress={togglePasswordVisibility(setShowConfirmPassword)}
+          style={styles.eyeIcon}
+        >
+          <Feather
+            name={showConfirmPassword ? 'eye' : 'eye-off'}
+            size={24}
+            color="gray"
+          />
         </TouchableOpacity>
       </View>
 
-           <View>
- {isPasswordInputFocused && (
+      {isPasswordInputFocused && (
         <PasswordStrengthMeter password={newPassword} />
-      )}      </View>
+      )}
 
-      <TouchableOpacity style={styles.proceedButton} onPress={handleProceed} disabled={loading}>
+      <TouchableOpacity
+        style={styles.proceedButton}
+        onPress={handleProceed}
+        disabled={loading}
+      >
         {loading ? (
           <ActivityIndicator color="white" />
         ) : (
@@ -160,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default updatePassword;
+export default UpdatePassword;

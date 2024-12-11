@@ -29,14 +29,14 @@ function MainScreen({ navigation, route }) {
     carouselContainer,
     divider,
     helpContainer,
-    notificationContainer
+    notificationContainer,
   } = styles;
 
   const [displayTitle, setDisplayTitle] = useState('');
   const [displayDate, setDisplayDate] = useState(null);
   const [displayTime, setDisplayTime] = useState(null);
   const [displayDoctorName, setDisplayDoctorName] = useState('');
-  const [userEmail, setUserEmail] = useState('');
+  const [username, setUserName] = useState('');
 
   const APPOINTMENT_TITLE_KEY = 'appointmentTitle';
   const APPOINTMENT_DATE_KEY = 'appointmentDate';
@@ -109,32 +109,32 @@ function MainScreen({ navigation, route }) {
   ]);
 
   useEffect(() => {
-    const getEmail = async () => {
+    const getUser = async () => {
       try {
-        const email = await AsyncStorage.getItem('userEmail');
-        if (email) {
-          setUserEmail(email);
-          console.log('Email retrieved from AsyncStorage:', email);
+        const username = await AsyncStorage.getItem('username');
+        if (username != null) {
+          setUserName(username);
+          console.log('Name retrieved from AsyncStorage:', username);
         }
       } catch (error) {
         console.error('Error retrieving email:', error);
       }
     };
-    getEmail();
+    getUser();
   }, []);
 
   return (
     <SafeAreaView style={wrapper}>
       {/* ----- main container ----- */}
       <View style={container}>
-         {/* notification bell */}
-         <View style={notificationContainer}>
-            <Feather name="bell" size={24} color="black" />
+        {/* notification bell */}
+        <View style={notificationContainer}>
+          <Feather name="bell" size={24} color="black" />
         </View>
         {/* ----- header content ----- */}
         <View style={headerContainer}>
           <Text style={[baseText, headerText]}>SickleAid</Text>
-          <Text style={[baseText, bodyText]}>Good Morning {userEmail} </Text>
+          <Text style={[baseText, bodyText]}>Good Morning {username} </Text>
         </View>
         <View style={carouselContainer}>
           <HeaderCardCarousel />
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   notificationContainer: {
     width: '100%',
     alignItems: 'flex-end',
-    paddingBottom: 20.98
+    paddingBottom: 20.98,
   },
   headerContainer: {
     alignSelf: 'flex-start',

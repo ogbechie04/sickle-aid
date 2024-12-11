@@ -62,10 +62,10 @@ import LovedOnesScreen from '../screens/LovedOnesScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import SignInScreen from '../screens/SigninScreen';
-import CheckEmail from '../screens/checkEmail';
-import UpdatePassword from '../screens/updatePassword';
+import CheckEmail from '../screens/CheckEmail';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
+import UpdatePassword from '../screens/UpdatePassword';
 
 
 const Stack = createStackNavigator();

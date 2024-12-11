@@ -107,34 +107,35 @@
 
 // export default App
 
-import React from 'react'
-import { NavigationContainer } from '@react-navigation/native'
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
 import {
   useFonts,
   Inter_400Regular,
   Inter_500Medium,
   Inter_600SemiBold,
-  Inter_700Bold
-} from '@expo-google-fonts/inter'
-import { RootNavigator } from './src/navigation/RootNavigation'
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
+import { RootNavigator } from './src/navigation/RootNavigation';
+// import PersonalInfoScreen from './src/screens/PersonalInfoScreen';
 
 const App = () => {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
-    Inter_700Bold
-  })
+    Inter_700Bold,
+  });
 
   if (!fontsLoaded) {
-    return null // Or you can return a loading screen component here
+    return null;
   }
 
   return (
     <NavigationContainer>
       <RootNavigator />
     </NavigationContainer>
-  )
-}
+  );
+};
 
-export default App
+export default App;
