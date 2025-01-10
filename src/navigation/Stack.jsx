@@ -13,8 +13,6 @@
 // import SignInOptionsScreen from '../screens/SigninOptions'
 // import PersonalInfoScreen from '../screens/PersonalInfoScreen'
 
-
-
 // const Stack = createStackNavigator()
 
 // function OnboardingStack() {
@@ -56,23 +54,22 @@
 
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import Tabs from './Tabs'; 
+import Tabs from './Tabs';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import LovedOnesScreen from '../screens/LovedOnesScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import SignInScreen from '../screens/SigninScreen';
-import CheckEmail from '../screens/CheckEmail';
+import CheckEmail from '../screens/checkEmail';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
-import UpdatePassword from '../screens/UpdatePassword';
-
+import UpdatePassword from '../screens/updatePassword';
 
 const Stack = createStackNavigator();
 
 function MainStack() {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="LovedOnes" component={LovedOnesScreen} />
       <Stack.Screen name="Communityscreen" component={CommunityScreen} />

@@ -14,8 +14,8 @@ import SignUpScreen from '../screens/SignupScreen';
 import SignInScreen from '../screens/SigninScreen';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
-import CheckEmail from '../screens/CheckEmail';
-import UpdatePassword from '../screens/UpdatePassword';
+import CheckEmail from '../screens/checkEmail';
+import UpdatePassword from '../screens/updatePassword';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
