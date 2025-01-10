@@ -14,7 +14,7 @@ import {
 import { Feather } from '@expo/vector-icons'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 
@@ -110,9 +110,8 @@ const SignInScreen = () => {
       setLoading(false);
   
       if (response.status === 200) {
-        await AsyncStorage.setItem('userEmail', email);
         alert('Successfully signed in', response.data.message)
-        navigation.navigate('MainApp', { email }) 
+        navigation.navigate('MainApp', { username }) 
         //email passed with async to main-app directly from sign-in
       } else {
         Alert.alert('Error', result.message || 'Login failed. Please try again.');
@@ -203,7 +202,6 @@ const SignInScreen = () => {
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
     </TouchableOpacity>
     </SafeAreaView>
-
   );
 };
 

@@ -1,33 +1,29 @@
-import React, { useState } from 'react'
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-import { Picker } from '@react-native-picker/picker' // Use this instead of 'react-native-web'
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SignInOptionsScreen = () => {
-  const navigation = useNavigation()
-  const [selectedRelation, setSelectedRelation] = useState('')
+  const navigation = useNavigation();
+  const [selectedRelation, setSelectedRelation] = useState('');
 
   const handlePickerChange = (itemValue) => {
-    setSelectedRelation(itemValue)
-  }
+    setSelectedRelation(itemValue);
+  };
 
   const handleSubmit = async () => {
     try {
-      const email = await AsyncStorage.getItem('userEmail');
-      if (email) {
-        navigation.navigate('MainApp', { email });
-      } else {
-        console.error('Email not found in AsyncStorage');
-      }
+      await AsyncStorage.setItem('selectedRelation', selectedRelation);
+      navigation.navigate('PersonalInfo', { relation: selectedRelation });
     } catch (error) {
-      console.error('Error retrieving email from AsyncStorage:', error);
+      console.error('Error storing relation in AsyncStorage:', error);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Select the applicable option</Text>
 
       <TouchableOpacity style={styles.PSC}>
@@ -57,9 +53,9 @@ const SignInOptionsScreen = () => {
       <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
-    </View>
-  )
-}
+    </SafeAreaView>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -67,13 +63,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     padding: 20,
-    marginTop: 40.58
+    marginTop: 40.58,
   },
   title: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 20,
-    color: 'black'
+    color: 'black',
   },
   PSC: {
     width: '100%',
@@ -84,11 +80,11 @@ const styles = StyleSheet.create({
     marginBottom: 50,
     marginTop: 50,
     paddingTop: 10,
-    paddingLeft: 10
+    paddingLeft: 10,
   },
   PSCText: {
     color: 'black',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   pickerContainer: {
     width: '100%',
@@ -97,13 +93,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: 'black',
     marginBottom: 50,
-    height: 50
+    height: 50,
   },
   picker: {
-    height: 50
+    height: 50,
   },
   pickerItem: {
-    color: 'palegoldenred'
+    color: 'palegoldenred',
   },
   submitButton: {
     backgroundColor: 'forestgreen',
@@ -111,12 +107,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     width: '100%',
     borderRadius: 71,
-    alignItems: 'center'
+    alignItems: 'center',
   },
   submitButtonText: {
     color: '#FFFFFF',
-    fontSize: 18
-  }
-})
+    fontSize: 18,
+  },
+});
 
-export default SignInOptionsScreen
+export default SignInOptionsScreen;

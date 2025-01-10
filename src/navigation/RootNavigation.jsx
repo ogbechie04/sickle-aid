@@ -12,14 +12,15 @@ import LovedOnesScreen from '../screens/LovedOnesScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import SignUpScreen from '../screens/SignupScreen';
 import SignInScreen from '../screens/SigninScreen';
-import UpdatePassword from '../screens/updatePassword';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
 import CheckEmail from '../screens/checkEmail';
+import UpdatePassword from '../screens/updatePassword';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
 import soundIcon from '../../assets/icons/sound.png';
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
