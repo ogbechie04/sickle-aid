@@ -20,14 +20,14 @@ import UpdatePassword from '../screens/updatePassword';
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
 import soundIcon from '../../assets/icons/sound.png';
-
+import MapScreen from '../screens/MapScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeStack() {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="MainScreen" component={MainScreen} />
       <Stack.Screen name="SetAppointment" component={SetAppointment} />
     </Stack.Navigator>
@@ -36,7 +36,7 @@ function HomeStack() {
 
 function SOSStack() {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="SosScreen" component={SosScreen} />
     </Stack.Navigator>
   );
@@ -52,40 +52,40 @@ function TabNavigator() {
           borderTopWidth: 0,
         },
         tabBarShowLabel: false,
-        headerShown: false
+        headerShown: false,
       }}
     >
-      <Tab.Screen 
-        name="Home" 
-        component={HomeStack} 
-        options={{ 
-          tabBarIcon: ({focused}) => (
-            <Image 
-              source={homeIcon} 
+      <Tab.Screen
+        name="Home"
+        component={HomeStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={homeIcon}
               style={{
-                width: 25, 
-                height: 25, 
-                tintColor: focused ? '#009444' : 'black'
-              }} 
+                width: 25,
+                height: 25,
+                tintColor: focused ? '#009444' : 'black',
+              }}
             />
-          )
-        }} 
+          ),
+        }}
       />
-      <Tab.Screen 
-        name="SOS" 
-        component={SOSStack} 
-        options={{ 
-          tabBarIcon: ({focused}) => (
-            <Image 
-              source={soundIcon} 
+      <Tab.Screen
+        name="SOS"
+        component={SOSStack}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Image
+              source={soundIcon}
               style={{
-                width: 25, 
-                height: 25, 
-                tintColor: focused ? '#009444' : 'black'
-              }} 
+                width: 25,
+                height: 25,
+                tintColor: focused ? '#009444' : 'black',
+              }}
             />
-          )
-        }} 
+          ),
+        }}
       />
     </Tab.Navigator>
   );
@@ -93,7 +93,7 @@ function TabNavigator() {
 
 function RootNavigator() {
   return (
-    <Stack.Navigator screenOptions={{headerShown: false}}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="LovedOnes" component={LovedOnesScreen} />
       <Stack.Screen name="Communityscreen" component={CommunityScreen} />
@@ -103,6 +103,7 @@ function RootNavigator() {
       <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
+      <Stack.Screen name="Map" component={MapScreen} />
       <Stack.Screen name="MainApp" component={TabNavigator} />
     </Stack.Navigator>
   );
