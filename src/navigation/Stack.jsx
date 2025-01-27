@@ -65,6 +65,7 @@ import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
 import UpdatePassword from '../screens/updatePassword';
 
+
 const Stack = createStackNavigator();
 
 function MainStack() {

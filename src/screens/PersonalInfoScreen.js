@@ -224,7 +224,7 @@ const PersonalInfoScreen = () => {
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="Full Name"
           value={username}
           onChangeText={setuserName}
         />

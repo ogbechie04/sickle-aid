@@ -34,7 +34,7 @@ const CommunityScreen = () => {
         <TouchableOpacity onPress={() => navigation.navigate('MainApp')}>
           <Text
             style={styles.skipText}
-            onPress={() => navigation.navigate('SignUp')}
+            onPress={() => navigation.navigate('MainApp')}
           >
             Skip
           </Text>
