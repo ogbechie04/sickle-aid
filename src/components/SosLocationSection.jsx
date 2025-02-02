@@ -1,40 +1,44 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
-
-/**
- *
- * TODO: Change touchable opacity?
- *
- */
+import { useNavigation } from '@react-navigation/native';
 
 function SOSLocationCard(props) {
+  const navigation = useNavigation();
+
   const {
     container,
     cardContainer,
     cardText,
     iconContainer,
-    homeIcon,
-    officeIcon,
-    searchIcon,
   } = styles;
+
   return (
     <View style={container}>
-      <TouchableOpacity style={cardContainer}>
+      <TouchableOpacity
+        style={cardContainer}
+        onPress={() => navigation.navigate('HospitalInformation')}
+      >
         <View style={iconContainer}>
-          <Feather name="home" size={48} style={homeIcon} />
+          <Feather name="home" size={48} color="#000" />
         </View>
         <Text style={cardText}>My Home</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={cardContainer}>
+      <TouchableOpacity
+        style={cardContainer}
+        onPress={() => navigation.navigate('OfficeInformation')}
+      >
         <View style={iconContainer}>
-          <Feather name="briefcase" size={48} style={officeIcon} />
+          <Feather name="briefcase" size={48} color="#000" />
         </View>
         <Text style={cardText}>My Office</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={cardContainer}>
+      <TouchableOpacity
+        style={cardContainer}
+        onPress={() => navigation.navigate('NearbyLocations')}
+      >
         <View style={iconContainer}>
-          <Feather name="search" size={48} style={searchIcon} />
+          <Feather name="search" size={48} color="#000" />
         </View>
         <Text style={cardText}>Find one near me</Text>
       </TouchableOpacity>
@@ -47,13 +51,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderRadius: 8,
     alignItems: 'flex-start',
-    gap: 32,
-  },
-  cardTitle: {
-    fontSize: 20,
-    color: '#332E0E',
-    fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 32, // Replace gap
   },
   cardText: {
     fontFamily: 'Inter',
@@ -66,7 +64,7 @@ const styles = StyleSheet.create({
   cardContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 48,
+    marginBottom: 32, // Replace gap
     width: '100%',
     alignSelf: 'flex-start',
   },
@@ -74,18 +72,7 @@ const styles = StyleSheet.create({
     borderRadius: 27.9,
     borderColor: '#000000',
     borderWidth: 6,
-  },
-  homeIcon: {
-    padding: 24,
-  },
-  officeIcon: {
-    padding: 28.05,
-  },
-  searchIcon: {
-    paddingTop: 27.86,
-    paddingLeft: 28.52,
-    paddingRight: 27.58,
-    paddingBottom: 28.24,
+    padding: 24, // Moved padding here
   },
 });
 
