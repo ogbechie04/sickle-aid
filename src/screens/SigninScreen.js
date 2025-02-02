@@ -18,6 +18,7 @@ import axios from 'axios';
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 import API_URL from '../config/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInScreen = () => {
   const navigation = useNavigation();
@@ -93,7 +94,13 @@ const SignInScreen = () => {
         password,
       });
 
+      console.log(response);
+
       const username = response.data.user.username;
+      const userId = response.data.user.id;
+      // console.log(userId);
+
+      AsyncStorage.setItem('userId', userId);
 
       // console.log(response)
       setLoading(false);
