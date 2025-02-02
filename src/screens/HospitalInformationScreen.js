@@ -21,19 +21,19 @@ function HospitalSetupScreen({ navigation }) {
     baseURL: API_URL || 'http://localhost:5000',
 
     async getHospital(userId) {
-      return axios.get(`${API.baseURL}/api/auth/get-hospital/${userId}`);
+      return axios.get(`${API.baseURL}/get-hospital/${userId}`);
     },
 
     async saveHospital(data) {
-      return axios.post(`${API.baseURL}/api/auth/save-hospital`, data);
+      return axios.post(`${API.baseURL}/save-hospital`, data);
     },
 
     async updateHospital(data) {
-      return axios.put(`${API.baseURL}/api/auth/update-hospital`, data);
+      return axios.put(`${API.baseURL}/update-hospital`, data);
     },
 
     async sendSOSAlert(userId) {
-      return axios.post(`${API.baseURL}/api/auth/send-sos-alert/${userId}`);
+      return axios.post(`${API.baseURL}/send-sos-alert/${userId}`);
     },
   };
 
