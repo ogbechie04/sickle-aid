@@ -23,7 +23,7 @@ import axios from 'axios'; // Assuming axios is being used for API requests
 import API_URL from '../config/api';
 
 const PersonalInfoScreen = () => {
-  const [username, setuserName] = useState('');
+  const [username, setUsername] = useState('');
   const [userEmail, setEmail] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
   const [relation, setRelation] = useState('');
@@ -40,34 +40,44 @@ const PersonalInfoScreen = () => {
   const [HMO, setHMO] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
 
-  const [loading, setLoading] = useState(false); // Track loading state
+  const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
 
   const navigation = useNavigation();
 
-  const handleName = async () => {
-    if (!username) {
-      Alert.alert('Error', 'Please enter a name.');
-      return false;
-    }
+  useEffect(() => {
+    const fetchStoredData = async () => {
+      try {
+        const storedEmail = await AsyncStorage.getItem('userEmail');
+        const storedRelation = await AsyncStorage.getItem('selectedRelation');
+        const storedId = await AsyncStorage.getItem('userId');
 
-    try {
-      await AsyncStorage.setItem('username', username);
-      Alert.alert('Success', 'Your name has been saved!');
-      return true;
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Error', 'There was an issue saving your name.');
-      return false;
-    }
-  };
+        if (storedEmail) setEmail(storedEmail);
+        if (storedRelation) setRelation(storedRelation);
+        if (storedId) setUserId(storedId);
+
+        console.log('Data retrieved:', {
+          storedEmail,
+          storedRelation,
+          storedId,
+        });
+      } catch (error) {
+        console.error('Error retrieving stored data:', error);
+      }
+    };
+
+    fetchStoredData();
+  }, []);
 
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (permissionResult.granted === false) {
-      Alert.alert('Permission to access camera roll is required!');
+    if (!permissionResult.granted) {
+      Alert.alert(
+        'Permission required',
+        'Permission to access camera roll is required!'
+      );
       return;
     }
 
@@ -114,89 +124,40 @@ const PersonalInfoScreen = () => {
     };
 
     try {
-      setLoading(true); // Start loading
+      setLoading(true);
       const response = await axios.put(
         `${API_URL}/users/${userId}/profile`,
         data
       );
-      console.log(response.data.message);
-      Alert.alert('Profile Update', response.data.message);
+      const updatedUsername = response.data.profile.username;
+
+      // Update username state and save to AsyncStorage
+      setUsername(updatedUsername);
+      await AsyncStorage.setItem('username', updatedUsername);
+
+      Alert.alert('Profile Updated', response.data.message);
       navigation.navigate('MainApp');
     } catch (error) {
       if (error.response) {
-        // Check if there are validation errors
         const errors = error.response.data.errors;
-        if (errors && Array.isArray(errors)) {
-          // Concatenate all error messages
-          const errorMessage = errors.map((err) => err.msg).join('\n');
-          Alert.alert('Error', errorMessage);
-        } else {
-          // Fallback to a generic error message
-          const errorMessage =
-            error.response.data.message || 'Failed to update profile';
-          Alert.alert('Error', errorMessage);
-        }
+        const errorMessage =
+          errors && Array.isArray(errors)
+            ? errors.map((err) => err.msg).join('\n')
+            : error.response.data.message || 'Failed to update profile';
+
+        Alert.alert('Error', errorMessage);
         console.error('Response error:', error.response.data);
       } else if (error.request) {
         console.error('No response received:', error.request);
         Alert.alert('Error', 'No response from server');
       } else {
-        console.error('Error message:', error.message);
+        console.error('Unexpected error:', error.message);
         Alert.alert('Error', 'An unexpected error occurred');
       }
     } finally {
       setLoading(false);
     }
   };
-
-  const handleSubmit = async () => {
-    const isNameSaved = await handleName();
-    if (isNameSaved) {
-      handleProfileUpdate();
-    }
-  };
-
-  useEffect(() => {
-    const getUserEmail = async () => {
-      try {
-        const userEmail = await AsyncStorage.getItem('userEmail');
-        if (userEmail != null) {
-          setEmail(userEmail);
-          console.log('Email retrieved from AsyncStorage:', userEmail);
-        }
-      } catch (error) {
-        console.error('Error retrieving email:', error);
-      }
-    };
-
-    const getRelation = async () => {
-      try {
-        const relation = await AsyncStorage.getItem('selectedRelation');
-        if (relation != null) {
-          setRelation(relation);
-          console.log('Relation retrieved from AsyncStorage:', relation);
-        }
-      } catch (error) {
-        console.error('Error retrieving relation:', error);
-      }
-    };
-
-    const getId = async () => {
-      try {
-        const id = await AsyncStorage.getItem('userId');
-        if (id != null) {
-          setUserId(id);
-          console.log('ID retrieved from AsyncStorage:', id);
-        }
-      } catch (error) {
-        console.error('Error retrieving ID:', error);
-      }
-    };
-
-    getUserEmail();
-    getRelation();
-    getId();
-  }, []);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -226,7 +187,7 @@ const PersonalInfoScreen = () => {
           style={styles.input}
           placeholder="Full Name"
           value={username}
-          onChangeText={setuserName}
+          onChangeText={setUsername}
         />
         <TextInput style={styles.input} placeholder="Username" />
         <TextInput style={styles.input} disabled={true} value={userEmail} />
@@ -289,7 +250,7 @@ const PersonalInfoScreen = () => {
       {/* Submit Button */}
       <TouchableOpacity
         style={styles.submitButton}
-        onPress={handleSubmit}
+        onPress={handleProfileUpdate}
         disabled={loading} // Disable button when loading
       >
         {loading ? (
