@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,29 +9,25 @@ import {
   StyleSheet,
   SafeAreaView,
   Alert,
-  ActivityIndicator
-} from 'react-native'
-import { Feather } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native'
+  ActivityIndicator,
+} from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-
-
-import API_URL from '../config/api'
-
-
+import API_URL from '../config/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInScreen = () => {
+  const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const navigation = useNavigation()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const[loading, setLoading] = useState(false);
-
-/*   useEffect(() => {
+  /*   useEffect(() => {
     GoogleSignin.configure({
       webClientId: '817053433167-vnk3fq2o6v0kn50uh6g63u2mg5ohmftl.apps.googleusercontent.com', 
       offlineAccess: false,  
@@ -89,51 +85,51 @@ const SignInScreen = () => {
       Alert.alert('Error', 'Email and password are required.');
       return;
     }
-  
+
     try {
       setLoading(true);
-  
-      //console.log('Request:', {
-        //url: `${API_URL}/signin`,
-        //payload: { email, password },
-      //});
-  
+
       const response = await axios.post(`${API_URL}/signin`, {
         email,
         password,
       });
-  
-      // Log full response
-      console.log('Response:', response);
-  
-      const result = response.data;
+
+      console.log(response);
+
+      const username = response.data.user.username;
+      const userId = response.data.user.id;
+      // console.log(userId);
+
+      AsyncStorage.setItem('userId', userId);
+
+      // console.log(response)
       setLoading(false);
-  
+
       if (response.status === 200) {
-        alert('Successfully signed in', response.data.message)
-        navigation.navigate('MainApp', { username }) 
-        //email passed with async to main-app directly from sign-in
+        alert('Successfully signed in', response.data.message);
+        navigation.navigate('MainApp', username);
       } else {
-        Alert.alert('Error', result.message || 'Login failed. Please try again.');
+        Alert.alert(
+          'Error',
+          result.message || 'Login failed. Please try again.'
+        );
       }
     } catch (error) {
       setLoading(false);
-  
+
       console.error('Login Error:', {
         message: error.message,
         response: error.response?.data,
       });
-  
+
       Alert.alert(
         'Error',
-        error.response?.data?.message || 'An error occurred. Please try again later.'
+        error.response?.data?.message ||
+          'An error occurred. Please try again later.'
       );
     }
   };
-  
 
-
-  
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Sign In</Text>
@@ -194,13 +190,13 @@ const SignInScreen = () => {
       </View>
 
       <TouchableOpacity disabled={loading} style={styles.googleButton}>
-      <Image
+        <Image
           source={require('../../assets/Googlelogo.png')}
           style={styles.googleLogo}
         />
         <Text>Sign in with Google</Text>
-      {loading && <ActivityIndicator size="large" color="#0000ff" />}
-    </TouchableOpacity>
+        {loading && <ActivityIndicator size="large" color="#0000ff" />}
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -210,19 +206,19 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 24,
     backgroundColor: 'white',
-    marginTop: 40.58
+    marginTop: 40.58,
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 47.2
+    marginBottom: 47.2,
   },
   subtitle: {
     fontSize: 13,
     color: 'black',
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -230,14 +226,14 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     borderWidth: 1,
     borderColor: 'lightgray',
-    borderRadius: 8
+    borderRadius: 8,
   },
   input: {
     flex: 1,
-    padding: 10
+    padding: 10,
   },
   eyeIcon: {
-    padding: 10
+    padding: 10,
   },
   signInButton: {
     backgroundColor: 'forestgreen',
@@ -245,29 +241,29 @@ const styles = StyleSheet.create({
     borderRadius: 71,
     alignItems: 'center',
     marginBottom: 20,
-    marginTop: 30
+    marginTop: 30,
   },
   signInButtonText: {
     color: 'white',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   forgotPassword: {
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'black'
+    backgroundColor: 'black',
   },
   dividerText: {
     marginHorizontal: 10,
-    color: 'black'
+    color: 'black',
   },
   googleButton: {
     flexDirection: 'row',
@@ -276,12 +272,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'lightgray',
     padding: 15,
-    borderRadius: 5
+    borderRadius: 5,
   },
   googleButtonText: {
     color: 'black',
-    marginLeft: 10
-  }
-})
+    marginLeft: 10,
+  },
+});
 
 export default SignInScreen;

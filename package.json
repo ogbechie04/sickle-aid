@@ -12,10 +12,10 @@
   },
   "dependencies": {
     "@expo-google-fonts/inter": "^0.2.3",
-    "@expo/metro-runtime": "~4.0.0",
+    "@expo/metro-runtime": "~4.0.1",
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/datetimepicker": "8.2.0",
-    "@react-native-picker/picker": "^2.9.0",
+    "@react-native-picker/picker": "2.9.0",
     "@react-navigation/bottom-tabs": "^6.6.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/stack": "^6.4.1",
@@ -42,7 +42,7 @@
     "toastify-react-native": "^5.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.24.0",
+    "@babel/core": "^7.25.2",
     "@eslint/compat": "^1.1.1",
     "@eslint/js": "^9.9.0",
     "@react-native-community/cli": "latest",

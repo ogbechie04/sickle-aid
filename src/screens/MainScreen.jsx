@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView, Text, View, StyleSheet } from 'react-native';
-import HeaderCardCarousel from '../components/HeaderCardCarousel';
+import {
+  SafeAreaView,
+  Text,
+  View,
+  StyleSheet,
+  Modal,
+  Button,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import HeaderCardCarousel from '../components/HeaderCardCarousel';
 import CommunitySection from '../components/CommunitySection';
 import HelpButton from '../components/HelpButton';
 import AppointmentSection from '../components/AppointmentSection';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatDate, formatTime } from '../utils/formatDateTime';
 
 /**
@@ -37,6 +45,7 @@ function MainScreen({ navigation, route }) {
   const [displayTime, setDisplayTime] = useState(null);
   const [displayDoctorName, setDisplayDoctorName] = useState('');
   const [username, setUserName] = useState('');
+  const [showSetupPrompt, setShowSetupPrompt] = useState(false);
 
   const APPOINTMENT_TITLE_KEY = 'appointmentTitle';
   const APPOINTMENT_DATE_KEY = 'appointmentDate';
@@ -49,14 +58,8 @@ function MainScreen({ navigation, route }) {
     appointmentTime,
     appointmentDoctorName,
   } = route.params || {};
-  console.log(
-    appointmentTitle,
-    appointmentDate,
-    appointmentTime,
-    appointmentDoctorName
-  );
 
-  //*   Retrieves the stored appointment data from AsyncStorage when the component mounts
+  // Retrieves the stored appointment data from AsyncStorage when component mounts
   useEffect(() => {
     const getAppointment = async () => {
       try {
@@ -67,39 +70,45 @@ function MainScreen({ navigation, route }) {
           APPOINTMENT_DOCTOR_KEY
         );
 
-        // Sets the useState values for each to the stored Values
+        // Set state based on stored values
         if (storedTitle) setDisplayTitle(storedTitle);
         if (storedDate) setDisplayDate(formatDate(storedDate));
         if (storedTime) setDisplayTime(formatTime(storedTime));
         if (storedDoctorName) setDisplayDoctorName(storedDoctorName);
-      } catch {
-        console.log('Error getting appointment');
+      } catch (error) {
+        console.error('Error retrieving appointment:', error);
       }
     };
     getAppointment();
   }, []);
 
-  //* Save the appointmentData in AsyncStorage if it comes from the navigation Params
+  // Save appointment data in AsyncStorage if they come from route params
   useEffect(() => {
     if (appointmentTitle) {
       setDisplayTitle(appointmentTitle);
-      AsyncStorage.setItem(APPOINTMENT_TITLE_KEY, appointmentTitle);
+      AsyncStorage.setItem(APPOINTMENT_TITLE_KEY, appointmentTitle).catch(
+        (error) => console.error('Error saving appointment title:', error)
+      );
     }
     if (appointmentDate) {
       const formattedDate = formatDate(appointmentDate);
       setDisplayDate(formattedDate);
-      AsyncStorage.setItem(APPOINTMENT_DATE_KEY, appointmentDate);
+      AsyncStorage.setItem(APPOINTMENT_DATE_KEY, appointmentDate).catch(
+        (error) => console.error('Error saving appointment date:', error)
+      );
     }
     if (appointmentTime) {
       const formattedTime = formatTime(appointmentTime);
       setDisplayTime(formattedTime);
-      AsyncStorage.setItem(APPOINTMENT_TIME_KEY, appointmentTime);
+      AsyncStorage.setItem(APPOINTMENT_TIME_KEY, appointmentTime).catch(
+        (error) => console.error('Error saving appointment time:', error)
+      );
     }
     if (appointmentDoctorName) {
       setDisplayDoctorName(appointmentDoctorName);
-      AsyncStorage.setItem(APPOINTMENT_DOCTOR_KEY, appointmentDoctorName);
-    } else {
-      console.log(appointmentDoctorName);
+      AsyncStorage.setItem(APPOINTMENT_DOCTOR_KEY, appointmentDoctorName).catch(
+        (error) => console.error('Error saving doctor name:', error)
+      );
     }
   }, [
     appointmentTitle,
@@ -108,47 +117,107 @@ function MainScreen({ navigation, route }) {
     appointmentDoctorName,
   ]);
 
+  // Fetch username from AsyncStorage
   useEffect(() => {
     const getUser = async () => {
       try {
         const username = await AsyncStorage.getItem('username');
-        if (username != null) {
+        if (username !== null) {
           setUserName(username);
-          console.log('Name retrieved from AsyncStorage:', username);
         }
       } catch (error) {
-        console.error('Error retrieving email:', error);
+        console.error('Error retrieving username:', error);
       }
     };
     getUser();
   }, []);
 
+  // Check if user has set up an SOS location
+  useEffect(() => {
+    const checkSOSSetup = async () => {
+      try {
+        const hasSetupSOS = await AsyncStorage.getItem('sosSetup');
+        if (hasSetupSOS === null) {
+          setShowSetupPrompt(true);
+        }
+      } catch (error) {
+        console.error('Error checking SOS setup:', error);
+      }
+    };
+    checkSOSSetup();
+  }, []);
+
+  const handleSetupComplete = async () => {
+    try {
+      await AsyncStorage.setItem('sosSetup', 'true'); // Save that SOS is set up
+      setShowSetupPrompt(false);
+      navigation.navigate('SOS'); // Navigate to setup page
+    } catch (error) {
+      console.error('Error completing SOS setup:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={wrapper}>
-      {/* ----- main container ----- */}
+      <Modal visible={showSetupPrompt} transparent animationType="slide">
+        <View
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: 'white',
+              padding: 20,
+              borderRadius: 10,
+            }}
+          >
+            <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+              Set Up SOS Location
+            </Text>
+            <Text style={{ marginVertical: 10 }}>
+              Please set up your SOS location to continue using the app.
+            </Text>
+            <Button title="Set Up Now" onPress={handleSetupComplete} />
+          </View>
+        </View>
+      </Modal>
+
       <View style={container}>
-        {/* notification bell */}
         <View style={notificationContainer}>
           <Feather name="bell" size={24} color="black" />
         </View>
-        {/* ----- header content ----- */}
+
         <View style={headerContainer}>
           <Text style={[baseText, headerText]}>SickleAid</Text>
           <Text style={[baseText, bodyText]}>Good Morning {username} </Text>
         </View>
+
         <View style={carouselContainer}>
           <HeaderCardCarousel />
         </View>
+
         <View style={divider}></View>
-        <AppointmentSection
-          navigation={navigation}
-          appointmentTitle={displayTitle}
-          appointmentDate={displayDate}
-          appointmentTime={displayTime}
-          appointmentDoctorName={displayDoctorName}
-        />
+
+        {displayTitle && displayDate && displayTime && displayDoctorName ? (
+          <AppointmentSection
+            navigation={navigation}
+            appointmentTitle={displayTitle}
+            appointmentDate={displayDate}
+            appointmentTime={displayTime}
+            appointmentDoctorName={displayDoctorName}
+          />
+        ) : (
+          <Text>No appointment details available.</Text>
+        )}
+
         <View style={divider}></View>
         <CommunitySection />
+
         <View style={helpContainer}>
           <HelpButton navigation={navigation} />
         </View>
@@ -221,5 +290,11 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
 });
+MainScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  route: PropTypes.object.isRequired,
+};
 
 export default MainScreen;

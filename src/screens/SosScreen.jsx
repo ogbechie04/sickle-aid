@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import SOSLocationCard from '../components/SosLocationSection';
+import PropTypes from 'prop-types';
 
 /**
  *
@@ -29,48 +30,59 @@ function SosScreen(props) {
     divider,
     cardContainer,
     iconContainer,
-    editIcon, addIcon,
+    editIcon,
+    addIcon,
     cardText,
-    addEditContainer
+    addEditContainer,
   } = styles;
   return (
     <SafeAreaView style={wrapper}>
-        <ScrollView>
-      <View style={container}>
-        {/* ----- HEADER SECTION ----- */}
-        <View style={headingContainer}>
-          <Feather
-            name="chevron-left"
-            size={24}
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={[baseText, headerText]}>SOS</Text>
-          <Text style={[baseText, headerBaseText]}>
-            Find a location near me
-          </Text>
-        </View>
-        {/* ----- LOCATION SECTION ----- */}
-        <View style={locationContainer}>
-          <SOSLocationCard />
-        </View>
-        <View style={divider}></View>
-        {/* ----- ADD & EDIT SECTION ----- */}
-        <View style={addEditContainer}>
-          <TouchableOpacity style={cardContainer}>
-            <View style={iconContainer}>
-              <Feather name="plus" size={32} style={addIcon} color={'#ffffff'} />
-            </View>
-            <Text style={cardText}>Add Location</Text>
-          </TouchableOpacity>
+      <ScrollView>
+        <View style={container}>
+          {/* ----- HEADER SECTION ----- */}
+          <View style={headingContainer}>
+            <Feather
+              name="chevron-left"
+              size={24}
+              onPress={() => navigation.goBack()}
+            />
+            <Text style={[baseText, headerText]}>SOS</Text>
+            <Text style={[baseText, headerBaseText]}>
+              Find a location near me
+            </Text>
+          </View>
+          {/* ----- LOCATION SECTION ----- */}
+          <View style={locationContainer}>
+            <SOSLocationCard />
+          </View>
+          <View style={divider}></View>
+          {/* ----- ADD & EDIT SECTION ----- */}
+          <View style={addEditContainer}>
+            <TouchableOpacity style={cardContainer}>
+              <View style={iconContainer}>
+                <Feather
+                  name="plus"
+                  size={32}
+                  style={addIcon}
+                  color={'#ffffff'}
+                />
+              </View>
+              <Text style={cardText}>Add Location</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity style={cardContainer}>
-            <View style={iconContainer}>
-              <Feather name="edit-2" size={24} style={editIcon} color={'#ffffff'} />
-            </View>
-            <Text style={cardText}>Edit Location</Text>
-          </TouchableOpacity>
+            <TouchableOpacity style={cardContainer}>
+              <View style={iconContainer}>
+                <Feather
+                  name="edit-2"
+                  size={24}
+                  style={editIcon}
+                  color={'#ffffff'}
+                />
+              </View>
+              <Text style={cardText}>Edit Location</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -130,7 +142,7 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     borderRadius: 14.2,
-    backgroundColor: '#332e0ecc'
+    backgroundColor: '#332e0ecc',
   },
   addIcon: {
     padding: 8,
@@ -147,4 +159,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.489,
   },
 });
+
+SosScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    goBack: PropTypes.func.isRequired,
+  }).isRequired,
+};
+
 export default SosScreen;

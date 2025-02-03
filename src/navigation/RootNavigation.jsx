@@ -16,6 +16,8 @@ import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
 import CheckEmail from '../screens/checkEmail';
 import UpdatePassword from '../screens/updatePassword';
+import HospitalInformation from '../screens/HospitalInformationScreen';
+import OfficeInformation from '../screens/OfficeInformationScreen';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
@@ -38,6 +40,8 @@ function SOSStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="SosScreen" component={SosScreen} />
+      <Stack.Screen name="HospitalInformation" component={HospitalInformation} />
+      <Stack.Screen name="OfficeInformation" component={OfficeInformation} />
     </Stack.Navigator>
   );
 }
