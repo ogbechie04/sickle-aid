@@ -64,7 +64,7 @@ import CheckEmail from '../screens/checkEmail';
 import SignInOptionsScreen from '../screens/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
 import UpdatePassword from '../screens/updatePassword';
-import MapScreen from '../screens/MapScreen';
+// import MapScreen from '../screens/MapScreen';
 
 const Stack = createStackNavigator();
 
@@ -80,7 +80,7 @@ function MainStack() {
       <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
-      <Stack.Screen name="Map" component={MapScreen} />
+      {/* <Stack.Screen name="Map" component={MapScreen} /> */}
       <Stack.Screen name="MainApp" component={Tabs} />
     </Stack.Navigator>
   );

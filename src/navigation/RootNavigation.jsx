@@ -22,7 +22,7 @@ import OfficeInformation from '../screens/OfficeInformationScreen';
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
 import soundIcon from '../../assets/icons/sound.png';
-import MapScreen from '../screens/MapScreen';
+// import MapScreen from '../screens/MapScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -107,7 +107,7 @@ function RootNavigator() {
       <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
-      <Stack.Screen name="Map" component={MapScreen} />
+      {/* <Stack.Screen name="Map" component={MapScreen} /> */}
       <Stack.Screen name="MainApp" component={TabNavigator} />
     </Stack.Navigator>
   );
