@@ -18,10 +18,12 @@ import CheckEmail from '../screens/checkEmail';
 import UpdatePassword from '../screens/updatePassword';
 import HospitalInformation from '../screens/HospitalInformationScreen';
 import OfficeInformation from '../screens/OfficeInformationScreen';
+import CommunityPage from '../screens/CommunityPage';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
 import soundIcon from '../../assets/icons/sound.png';
+import communityIcon from '../../assets/icons/community.png';
 
 
 const Stack = createStackNavigator();
@@ -76,6 +78,22 @@ function TabNavigator() {
         }} 
       />
       <Tab.Screen 
+        name="Community" 
+        component={CommunityPage} 
+        options={{ 
+          tabBarIcon: ({focused}) => (
+            <Image 
+              source={communityIcon} 
+              style={{
+                width: 25, 
+                height: 25, 
+                tintColor: focused ? '#009444' : 'black'
+              }} 
+            />
+          )
+        }} 
+      />
+      <Tab.Screen 
         name="SOS" 
         component={SOSStack} 
         options={{ 
@@ -98,6 +116,7 @@ function TabNavigator() {
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="MainApp" component={TabNavigator} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="LovedOnes" component={LovedOnesScreen} />
       <Stack.Screen name="Communityscreen" component={CommunityScreen} />
@@ -107,7 +126,7 @@ function RootNavigator() {
       <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
-      <Stack.Screen name="MainApp" component={TabNavigator} />
+      <Stack.Screen name="Community" component={CommunityScreen} />
     </Stack.Navigator>
   );
 }
