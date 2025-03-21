@@ -19,11 +19,18 @@ import UpdatePassword from '../screens/updatePassword';
 import HospitalInformation from '../screens/HospitalInformationScreen';
 import OfficeInformation from '../screens/OfficeInformationScreen';
 import CommunityPage from '../screens/CommunityPage';
+import GeneralCommunityScreen from '../screens/GeneralCommunityScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import PaymentPlanScreen from '../screens/PaymentPlanScreen';
+import PaymentMethodScreen from '../screens/PaymentMethodScreen';
+import ContactScreen from '../screens/ContactScreen';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
 import soundIcon from '../../assets/icons/sound.png';
 import communityIcon from '../../assets/icons/community.png';
+import ProfileIcon from '../../assets/icons/Profile.png';
+import CallIcon from '../../assets/icons/Phone.png';
 
 
 const Stack = createStackNavigator();
@@ -44,6 +51,24 @@ function SOSStack() {
       <Stack.Screen name="SosScreen" component={SosScreen} />
       <Stack.Screen name="HospitalInformation" component={HospitalInformation} />
       <Stack.Screen name="OfficeInformation" component={OfficeInformation} />
+    </Stack.Navigator>
+  );
+}
+
+function ContactStack() {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="ContactScreen" component={ContactScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function SettingsStack() {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+      <Stack.Screen name="PaymentPlanScreen" component={PaymentPlanScreen} />
+      <Stack.Screen name="PaymentMethodScreen" component={PaymentMethodScreen} />
     </Stack.Navigator>
   );
 }
@@ -109,7 +134,41 @@ function TabNavigator() {
           )
         }} 
       />
+            <Tab.Screen 
+        name="Contact" 
+        component={ContactStack} 
+        options={{ 
+          tabBarIcon: ({focused}) => (
+            <Image 
+              source={CallIcon} 
+              style={{
+                width: 25, 
+                height: 25, 
+                tintColor: focused ? '#009444' : 'black'
+              }} 
+            />
+          )
+        }} 
+      />
+      
+            <Tab.Screen 
+        name="Settings" 
+        component={SettingsStack} 
+        options={{ 
+          tabBarIcon: ({focused}) => (
+            <Image 
+              source={ProfileIcon} 
+              style={{
+                width: 25, 
+                height: 25, 
+                tintColor: focused ? '#009444' : 'black'
+              }} 
+            />
+          )
+        }} 
+      />
     </Tab.Navigator>
+    
   );
 }
 
@@ -127,6 +186,7 @@ function RootNavigator() {
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
       <Stack.Screen name="Community" component={CommunityScreen} />
+      <Stack.Screen name="GeneralCommunity" component={GeneralCommunityScreen} />
     </Stack.Navigator>
   );
 }

@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     borderColor: '#000000',
     borderWidth: 6,
     padding: 24, // Moved padding here
+    marginRight: 16, // Moved margin
   },
 });
 

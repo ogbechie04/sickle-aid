@@ -41,12 +41,17 @@ function SosScreen(props) {
         <View style={container}>
           {/* ----- HEADER SECTION ----- */}
           <View style={headingContainer}>
-            <Feather
-              name="chevron-left"
-              size={24}
-              onPress={() => navigation.goBack()}
-            />
-            <Text style={[baseText, headerText]}>SOS</Text>
+            {/* Row for Back Icon & "SOS" Text */}
+            <View style={styles.headerRow}>
+              <Feather
+                name="chevron-left"
+                size={24}
+                onPress={() => navigation.goBack()}
+              />
+              <Text style={[baseText, headerText]}>SOS</Text>
+            </View>
+
+            {/* "Find a location near me" Below */}
             <Text style={[baseText, headerBaseText]}>
               Find a location near me
             </Text>
@@ -91,7 +96,8 @@ function SosScreen(props) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#fff',
+    paddingTop: 20,
   },
   container: {
     flex: 1,
@@ -105,6 +111,11 @@ const styles = StyleSheet.create({
   },
   baseText: {
     fontFamily: 'Inter',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   headerText: {
     paddingTop: 10,

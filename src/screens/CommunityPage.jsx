@@ -35,15 +35,21 @@ const CommunityPage = () => {
         </View>
 
         {/* Community Buttons */}
-        <TouchableOpacity style={styles.communityButton}>
-          <Text style={styles.communityTitle}>General</Text>
-          <Text style={styles.communityDesc}>For general topics and information.</Text>
-        </TouchableOpacity>
+        <TouchableOpacity 
+            style={styles.communityButton}
+            onPress={() => navigation.navigate('GeneralCommunity')}
+          >
+            <Text style={styles.communityTitle}>General</Text>
+            <Text style={styles.communityDesc}>For general topics and information.</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity style={styles.communityButton}>
-          <Text style={styles.communityTitle}>Wives</Text>
-          <Text style={styles.communityDesc}>For general topics and information.</Text>
-        </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.communityButton}
+            onPress={() => navigation.navigate('GeneralCommunity')} // Use the same screen for now, you can create a separate one later
+          >
+            <Text style={styles.communityTitle}>Wives</Text>
+            <Text style={styles.communityDesc}>For general topics and information.</Text>
+          </TouchableOpacity>
       </ScrollView>
     </View>
     </SafeAreaView>
@@ -76,6 +82,8 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#F9F8F8',
     borderRadius: 8,
+    border: 2,
+    borderColor: '332E0E',
     overflow: 'hidden',
     marginBottom: 16,
   },
@@ -85,8 +93,12 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     padding: 16,
+    borderColor: '#ddd',
   },
   cardTitle: {
+    border: 5,
+    borderColor: 'black',
+    borderRadius: 8,
     fontSize: 18,
     fontWeight: 'bold',
     color: '#5A4F2F',

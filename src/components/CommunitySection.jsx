@@ -16,9 +16,6 @@ function CommunitySection() {
     enterButton,
     enterButtonText,
     buttonTextStyle,
-    buttonSpacing,
-    joinButton,
-    yellowButtonText,
   } = styles;
   return (
     <View style={communityContainer}>
@@ -36,13 +33,8 @@ function CommunitySection() {
       <View style={communityButtonContainer}>
         <ButtonComp
           buttonSpacing={[enterButton]}
-          buttonText={'Enter'}
-          buttonTextStyle={[baseText, buttonTextStyle, enterButtonText]}
-        />
-        <ButtonComp
-          buttonSpacing={[buttonSpacing, joinButton]}
           buttonText={'Join'}
-          buttonTextStyle={[baseText, buttonTextStyle, yellowButtonText]}
+          buttonTextStyle={[baseText, buttonTextStyle, enterButtonText]}
         />
       </View>
     </View>
@@ -97,9 +89,6 @@ const styles = StyleSheet.create({
   },
   enterButtonText: {
     color: '#009444',
-  },
-  yellowButtonText: {
-    color: '#FFFADE',
   },
   buttonTextStyle: {
     fontSize: 13,
