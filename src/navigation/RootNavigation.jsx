@@ -175,7 +175,6 @@ function TabNavigator() {
 function RootNavigator() {
   return (
     <Stack.Navigator screenOptions={{headerShown: false}}>
-      <Stack.Screen name="MainApp" component={TabNavigator} />
       <Stack.Screen name="Onboarding" component={OnboardingScreen} />
       <Stack.Screen name="LovedOnes" component={LovedOnesScreen} />
       <Stack.Screen name="Communityscreen" component={CommunityScreen} />
@@ -185,6 +184,7 @@ function RootNavigator() {
       <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
+      <Stack.Screen name="MainApp" component={TabNavigator} />
       <Stack.Screen name="Community" component={CommunityScreen} />
       <Stack.Screen name="GeneralCommunity" component={GeneralCommunityScreen} />
     </Stack.Navigator>
