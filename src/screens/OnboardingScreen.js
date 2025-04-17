@@ -17,7 +17,7 @@ const OnboardingScreen = () => {
       <View style={styles.content}>
         <Image
           // eslint-disable-next-line no-undef
-          source={require('../../assets/childonboard.png')}
+          source={require('../../assets/childonboard.jpg')}
           style={styles.image}
         />
         <Text style={styles.title}>PSC</Text>

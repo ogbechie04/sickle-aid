@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  SafeAreaView,
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import SOSLocationCard from '../components/SosLocationSection';
 import PropTypes from 'prop-types';
@@ -97,12 +97,10 @@ const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 20,
   },
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 20,
     paddingHorizontal: 24,
   },
   headingContainer: {

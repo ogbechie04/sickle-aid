@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   Dimensions,
   SafeAreaView,
@@ -8,12 +8,6 @@ import {
   FlatList,
 } from 'react-native';
 import HeaderCard from './HeaderCard';
-
-/**
- *
- * TODO: Putting individual bgWidth and bgColor for each card
- *
- */
 
 const headerCardData = [
   {
@@ -40,6 +34,23 @@ const cardWidth = windowWidth - 42;
 function HeaderCardCarousel() {
   const { container, cardContainer, indicatorContainer, dot } = styles;
   const scrollX = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef(null); // Reference to the FlatList
+  const currentIndex = useRef(0); // Track the current index
+
+  // Self-scrolling logic
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (flatListRef.current) {
+        currentIndex.current = (currentIndex.current + 1) % headerCardData.length; // Loop back to the start
+        flatListRef.current.scrollToOffset({
+          offset: currentIndex.current * cardWidth,
+          animated: true,
+        });
+      }
+    }, 3000); // Scroll every 3 seconds
+
+    return () => clearInterval(interval); // Clear the interval on unmount
+  }, []);
 
   const renderItem = ({ item }) => (
     <View style={[cardContainer, { width: cardWidth }]}>
@@ -56,9 +67,10 @@ function HeaderCardCarousel() {
     <SafeAreaView>
       <View style={container}>
         <FlatList
+          ref={flatListRef} // Attach the FlatList reference
           data={headerCardData}
           renderItem={renderItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.id.toString()}
           horizontal
           pagingEnabled
           showsHorizontalScrollIndicator={false}
@@ -69,7 +81,6 @@ function HeaderCardCarousel() {
           snapToInterval={cardWidth}
           decelerationRate="fast"
           snapToAlignment="start"
-
         />
         <View style={indicatorContainer}>
           {headerCardData.map((_, i) => {

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';
 
-function SOSLocationCard(props) {
+function SOSLocationCard() {
   const navigation = useNavigation();
 
   const {

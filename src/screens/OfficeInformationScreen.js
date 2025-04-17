@@ -78,7 +78,7 @@ const OfficeInformation = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="home-outline" size={24} color="green" />
@@ -95,7 +95,7 @@ const OfficeInformation = ({ navigation }) => {
         <TouchableOpacity style={styles.navItem}>
           <Ionicons name="person-outline" size={24} color="black" />
         </TouchableOpacity>
-      </View>
+      </View> */}
     </SafeAreaView>
   );
 };
@@ -170,9 +170,9 @@ const styles = StyleSheet.create({
     borderTopColor: '#eee',
     backgroundColor: '#fff',
   },
-  navItem: {
-    padding: 8,
-  },
+  // navItem: {
+  //   padding: 8,
+  // },
 });
 
 export default OfficeInformation;

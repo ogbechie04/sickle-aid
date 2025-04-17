@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import {
-  SafeAreaView,
   Text,
   View,
   StyleSheet,
   Modal,
   Button,
+  StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -37,7 +38,6 @@ function MainScreen({ navigation, route }) {
     carouselContainer,
     divider,
     helpContainer,
-    notificationContainer,
   } = styles;
 
   const [displayTitle, setDisplayTitle] = useState('');
@@ -188,12 +188,12 @@ function MainScreen({ navigation, route }) {
       </Modal>
 
       <View style={container}>
-        <View style={notificationContainer}>
-          <Feather name="bell" size={24} color="black" />
+        <View style={styles.headerRow}>
+          <Text style={[baseText, headerText]}>SickleAid</Text>
+          <Feather name="bell" size={24} color="black" style={styles.bellIcon} />
         </View>
 
         <View style={headerContainer}>
-          <Text style={[baseText, headerText]}>SickleAid</Text>
           <Text style={[baseText, bodyText]}>Good Morning {username} </Text>
         </View>
 
@@ -234,17 +234,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 20,
     paddingHorizontal: 21,
   },
   notificationContainer: {
     width: '100%',
     alignItems: 'flex-end',
     paddingBottom: 20.98,
+    marginTop: StatusBar.currentHeight || 0,
   },
   headerContainer: {
     alignSelf: 'flex-start',
     gap: 7,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  bellIcon: {
+    marginRight: 10,
   },
   carouselContainer: {
     width: '100%',

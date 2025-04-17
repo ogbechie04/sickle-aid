@@ -18,7 +18,7 @@ const CommunityScreen = () => {
       <View style={styles.content}>
         <Image
           // eslint-disable-next-line no-undef
-          source={require('../../assets/communitypic.png')}
+          source={require('../../assets/communitypic.jpg')}
           style={styles.image}
         />
         <Text style={styles.title}>COMMUNITY</Text>
@@ -31,10 +31,10 @@ const CommunityScreen = () => {
         >
           <Text style={styles.buttonText}>Next</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('MainApp')}>
+        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
           <Text
             style={styles.skipText}
-            onPress={() => navigation.navigate('MainApp')}
+            onPress={() => navigation.navigate('SignUp')}
           >
             Skip
           </Text>

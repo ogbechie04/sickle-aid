@@ -183,10 +183,10 @@ function RootNavigator() {
       <Stack.Screen name="PasswordReset" component={UpdatePassword} />
       <Stack.Screen name="emailcheck" component={CheckEmail} />
       <Stack.Screen name="SignInOptions" component={SignInOptionsScreen} />
-      <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
-      <Stack.Screen name="MainApp" component={TabNavigator} />
       <Stack.Screen name="Community" component={CommunityScreen} />
       <Stack.Screen name="GeneralCommunity" component={GeneralCommunityScreen} />
+      <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
+      <Stack.Screen name="MainApp" component={TabNavigator} />
     </Stack.Navigator>
   );
 }
