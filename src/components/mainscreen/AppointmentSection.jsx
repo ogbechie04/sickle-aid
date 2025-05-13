@@ -1,7 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import PropTypes from 'prop-types';
 import ButtonComp from './Button';
+
+function formatDisplayDate(isoString) {
+  if (!isoString) return 'YY-MM-DD';
+  const date = new Date(isoString);
+  return date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+function formatDisplayTime(isoString) {
+  if (!isoString) return '00:00';
+  const date = new Date(isoString);
+  return date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: true }).toLowerCase();
+}
 
 function AppointmentSection(props) {
   const {
@@ -10,6 +23,7 @@ function AppointmentSection(props) {
     appointmentDate,
     appointmentTime,
     appointmentDoctorName,
+    onDone,
   } = props;
   const {
     checkupContainer,
@@ -31,9 +45,9 @@ function AppointmentSection(props) {
         <Text style={[baseText, bodyText]}>
           {appointmentTitle ? appointmentTitle : 'Add an appointment'}
         </Text>
-        <Text
-          style={[baseText, checkupDateTime]}
-        >{`${appointmentDate ? appointmentDate : 'YY-MM-DD'} | ${appointmentTime ? appointmentTime : '00:00'}`}</Text>
+        <Text style={[baseText, checkupDateTime]}>
+          {`${formatDisplayDate(appointmentDate)} | ${formatDisplayTime(appointmentTime)}`}
+        </Text>
         <Text
           style={[baseText, checkupDoctor]}
         >{`With Dr ${appointmentDoctorName ? appointmentDoctorName : 'John Doe'}`}</Text>
@@ -42,7 +56,12 @@ function AppointmentSection(props) {
       <View style={checkupDoneContainer}>
         <TouchableOpacity
           style={iconContainer}
-          onPress={() => navigation.navigate('SetAppointment')}
+          onPress={() => navigation.navigate('SetAppointment', {
+            title: appointmentTitle,
+            date: appointmentDate,
+            time: appointmentTime,
+            doctor: appointmentDoctorName,
+          })}
         >
           <Feather name="edit-2" size={14} color="black" />
         </TouchableOpacity>
@@ -50,6 +69,7 @@ function AppointmentSection(props) {
           buttonSpacing={buttonSpacing}
           buttonTextStyle={[baseText, buttonTextStyle, yellowButtonText]}
           buttonText={'Done'}
+          onPress={onDone}
         />
       </View>
     </View>
@@ -62,8 +82,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
-    // borderWidth: 5,
     alignItems: 'center',
+    marginBottom: 16,
+    backgroundColor: '#F9FAFB', // Light card background
+    borderRadius: 12,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 4,
+    elevation: 2,
+    borderLeftWidth: 5,
+    borderLeftColor: '#0B9444', // Accent color
   },
   checkupDateTime: {
     fontSize: 12,
@@ -108,10 +138,20 @@ const styles = StyleSheet.create({
   bodyText: {
     color: '#000000',
     fontSize: 16,
-    fontWeight: 600,
+    fontWeight: '600',
     lineHeight: 24,
     letterSpacing: 0.64,
   },
 });
+AppointmentSection.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+  appointmentTitle: PropTypes.string,
+  appointmentDate: PropTypes.string,
+  appointmentTime: PropTypes.string,
+  appointmentDoctorName: PropTypes.string,
+  onDone: PropTypes.func.isRequired,
+};
 
 export default AppointmentSection;

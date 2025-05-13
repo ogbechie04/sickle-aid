@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { SafeAreaView, Text, View, StyleSheet, TextInput } from 'react-native';
+import PropTypes from 'prop-types';
+import { Text, View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import ButtonComp from './Button';
+import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
  * TODO: Add functionality to SetAppointment
@@ -10,6 +14,12 @@ import ButtonComp from './Button';
  */
 
 function SetAppointment({ navigation }) {
+  const route = useRoute();
+  const { title, date, time, doctor } = route.params || {};
+
+  // Log the incoming time param
+  console.log('Incoming time param:', time);
+
   const {
     wrapper,
     container,
@@ -23,21 +33,40 @@ function SetAppointment({ navigation }) {
     buttonTextStyle,
   } = styles;
 
-  const [title, setTitle] = useState('');
-  const [date, setDate] = useState('');
-  const [time, setTime] = useState('');
-  const [doctorsName, setDoctorsName] = useState('');
+  const [reminderTitle, setReminderTitle] = React.useState(title || '');
+  const [reminderDate, setReminderDate] = React.useState(date ? new Date(date) : '');
+  const [reminderTime, setReminderTime] = React.useState(time ? new Date(time) : '');
+  const [doctorsName, setDoctorsName] = React.useState(doctor || '');
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const [isTimePickerVisible, setTimePickerVisibility] = useState(false);
 
-  const addAppointment = () => {
-    navigation.navigate('MainScreen', {
-      appointmentTitle: title,
-      appointmentDate: date.toISOString(),
-      appointmentTime: time.toISOString(),
-      appointmentDoctorName: doctorsName,
-    });
-    console.log(doctorsName)
+  // Log the state after initialization
+  React.useEffect(() => {
+    console.log('reminderTime state after init:', reminderTime);
+  }, []);
+
+  // Log the state whenever reminderTime changes
+  React.useEffect(() => {
+    console.log('reminderTime updated:', reminderTime);
+  }, [reminderTime]);
+
+  const addAppointment = async () => {
+    const newAppointment = {
+      title: reminderTitle,
+      date: reminderDate ? reminderDate.toISOString() : '',
+      time: reminderTime ? reminderTime.toISOString() : '',
+      doctor: doctorsName,
+    };
+
+    try {
+      const stored = await AsyncStorage.getItem('appointments');
+      const appointments = stored ? JSON.parse(stored) : [];
+      appointments.push(newAppointment);
+      await AsyncStorage.setItem('appointments', JSON.stringify(appointments));
+      navigation.navigate('MainScreen');
+    } catch (error) {
+      console.error('Error saving appointment:', error);
+    }
   };
 
   const showDatePicker = () => {
@@ -49,15 +78,16 @@ function SetAppointment({ navigation }) {
   };
 
   const handleDateConfirm = (date) => {
-    setDate(date);
+    setReminderDate(date);
     hideDatePicker();
   };
 
   const getDate = () => {
-    let tempDate = date.toString().split(' ');
-    return date !== ''
-      ? `${tempDate[0]} ${tempDate[1]} ${tempDate[2]} ${tempDate[3]}`
-      : '';
+    if (reminderDate && reminderDate instanceof Date && !isNaN(reminderDate)) {
+      let tempDate = reminderDate.toDateString().split(' ');
+      return `${tempDate[0]} ${tempDate[1]} ${tempDate[2]} ${tempDate[3]}`;
+    }
+    return '';
   };
 
   const showTimePicker = () => {
@@ -69,14 +99,14 @@ function SetAppointment({ navigation }) {
   };
 
   const handleTimeConfirm = (time) => {
-    setTime(time);
-    hideDatePicker();
+    setReminderTime(time);
+    hideTimePicker();
   };
 
   const getTime = () => {
-    if (time instanceof Date) {
-      let tempTime = time.toLocaleTimeString().split(':');
-      return `${tempTime[0]}:${tempTime[1]}`;
+    if (reminderTime && reminderTime instanceof Date && !isNaN(reminderTime)) {
+      let tempTime = reminderTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return tempTime;
     }
     return '';
   };
@@ -98,21 +128,18 @@ function SetAppointment({ navigation }) {
             <TextInput
               style={[input, baseText]}
               placeholder="Reminder Title"
-              placeholderTextColor={'#332E0E'}
-              value={title}
-              onChangeText={(text) => setTitle(text)}
+              placeholderTextColor="#888"
+              value={reminderTitle}
+              onChangeText={setReminderTitle}
             />
           </View>
           {/* ----- REMINDER DATE ----- */}
           <View style={inputContainer}>
-            <TextInput
-              style={[input, baseText]}
-              placeholder="Date"
-              placeholderTextColor={'#332E0E'}
-              value={getDate()}
-              editable={false}
-              onPress={showDatePicker}
-            />
+            <TouchableOpacity style={{ flex: 1 }} onPress={showDatePicker}>
+              <Text style={[input, baseText, { color: reminderDate ? '#332E0E' : 'grey' }]}>
+                {getDate() || 'Date'}
+              </Text>
+            </TouchableOpacity>
             <Feather
               name="calendar"
               size={20}
@@ -129,14 +156,11 @@ function SetAppointment({ navigation }) {
           </View>
           {/* ----- REMINDER TIME ----- */}
           <View style={inputContainer}>
-            <TextInput
-              style={[input, baseText]}
-              placeholder="Time"
-              placeholderTextColor={'#332E0E'}
-              onPress={showTimePicker}
-              value={getTime()}
-              editable={false}
-            />
+            <TouchableOpacity style={{ flex: 1 }} onPress={showTimePicker}>
+              <Text style={[input, baseText, { color: reminderTime ? '#332E0E' : 'grey' }]}>
+                {getTime() || 'Time'}
+              </Text>
+            </TouchableOpacity>
             <Feather
               name="clock"
               size={20}
@@ -156,14 +180,14 @@ function SetAppointment({ navigation }) {
             <TextInput
               style={[input, baseText]}
               placeholder="Dr, Name"
-              placeholderTextColor={'#332E0E'}
+              placeholderTextColor="#888"
               value={doctorsName}
-              onChangeText={(text) => setDoctorsName(text)}
+              onChangeText={setDoctorsName}
             />
           </View>
         </View>
         <ButtonComp
-          buttonText={'Add'}
+          buttonText={title ? 'Update' : 'Add'}
           buttonSpacing={buttonSpacing}
           buttonTextStyle={[buttonTextStyle, baseText]}
           onPress={addAppointment}
@@ -209,8 +233,7 @@ const styles = StyleSheet.create({
     width: '100%',
     borderWidth: 0.5,
     borderRadius: 8,
-    paddingVertical: 8,
-    paddingLeft: 12,
+    paddingLeft: 10,
     paddingRight: 40,
     height: 40,
     alignItems: 'center',
@@ -224,6 +247,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.52,
     color: '#332E0E',
     borderColor: '#332E0E',
+    height: 40,
+    textAlignVertical: 'center',
   },
   buttonTextStyle: {
     fontSize: 16,
@@ -240,5 +265,12 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
+SetAppointment.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    goBack: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default SetAppointment;
+

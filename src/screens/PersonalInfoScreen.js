@@ -161,8 +161,10 @@ const PersonalInfoScreen = () => {
         dateOfBirth,
         bloodGroup,
         allergies,
+        allergyType,
         medication,
         HMO,
+        memberID,
         emergencyContact,
         relation: relation || '',
       };

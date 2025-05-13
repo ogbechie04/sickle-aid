@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
 import ButtonComp from './Button';
-import commImage from '../../assets/comm.png';
+import commImage from '../../../assets/comm.png';
 
 function CommunitySection() {
   const {

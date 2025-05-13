@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, Image, SafeAreaView } from 'react-native';
-import boyImage from '../../assets/hero-boy.png';
+import PropTypes from 'prop-types';
+import boyImage from '../../../assets/hero-boy.png';
 
 /**
  *
@@ -73,5 +74,11 @@ const styles = StyleSheet.create({
     resizeMode: 'contain'
   }
 });
+HeaderCard.propTypes = {
+  headingText: PropTypes.string.isRequired,
+  mainText: PropTypes.string.isRequired,
+  textColor: PropTypes.string,
+};
+
 
 export default HeaderCard;

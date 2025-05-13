@@ -94,7 +94,7 @@ const SignInScreen = () => {
         password,
       });
 
-      console.log(response);
+      console.log(response.data);
 
       const username = response.data.user.username;
       const userId = response.data.user.id;

@@ -5,7 +5,7 @@ import { Image } from 'react-native';
 
 // Import your screen components
 import MainScreen from '../screens/MainScreen';
-import SetAppointment from '../components/SetAppointment';
+import SetAppointment from '../components/mainscreen/SetAppointment';
 import SosScreen from '../screens/SosScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import LovedOnesScreen from '../screens/LovedOnesScreen';
@@ -24,6 +24,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import PaymentPlanScreen from '../screens/PaymentPlanScreen';
 import PaymentMethodScreen from '../screens/PaymentMethodScreen';
 import ContactScreen from '../screens/ContactScreen';
+import AllAppointmentsScreen from '../screens/AllAppointmentsScreen';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
@@ -41,6 +42,7 @@ function HomeStack() {
     <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Screen name="MainScreen" component={MainScreen} />
       <Stack.Screen name="SetAppointment" component={SetAppointment} />
+      <Stack.Screen name="AllAppointmentsScreen" component={AllAppointmentsScreen} />
     </Stack.Navigator>
   );
 }

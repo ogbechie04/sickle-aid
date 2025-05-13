@@ -6,28 +6,26 @@ import {
   Modal,
   Button,
   StatusBar,
+  ScrollView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import HeaderCardCarousel from '../components/HeaderCardCarousel';
-import CommunitySection from '../components/CommunitySection';
-import HelpButton from '../components/HelpButton';
-import AppointmentSection from '../components/AppointmentSection';
-import { formatDate, formatTime } from '../utils/formatDateTime';
+import { useFocusEffect } from '@react-navigation/native';
+import HeaderCardCarousel from '../components/mainscreen/HeaderCardCarousel';
+import CommunitySection from '../components/mainscreen/CommunitySection';
+import HelpButton from '../components/mainscreen/HelpButton';
+import AppointmentSection from '../components/mainscreen/AppointmentSection';
+import ButtonComp from '../components/mainscreen/Button';
 
 /**
  *
- * TODO: Change Gift to users name
- * TODO: Work on functionality for checkup
- * TODO: Clean up date and time code
- * Todo: Add functionality to help button
+
  * TODO: Clear appointment details when Done is clicked
  * TODO: Add notification bell to top of app
- * ? Why is the second divider darker than the first
  */
-function MainScreen({ navigation, route }) {
+function MainScreen({ navigation }) {
   const {
     wrapper,
     baseText,
@@ -40,82 +38,10 @@ function MainScreen({ navigation, route }) {
     helpContainer,
   } = styles;
 
-  const [displayTitle, setDisplayTitle] = useState('');
-  const [displayDate, setDisplayDate] = useState(null);
-  const [displayTime, setDisplayTime] = useState(null);
-  const [displayDoctorName, setDisplayDoctorName] = useState('');
   const [username, setUserName] = useState('');
   const [showSetupPrompt, setShowSetupPrompt] = useState(false);
-
-  const APPOINTMENT_TITLE_KEY = 'appointmentTitle';
-  const APPOINTMENT_DATE_KEY = 'appointmentDate';
-  const APPOINTMENT_TIME_KEY = 'appointmentTime';
-  const APPOINTMENT_DOCTOR_KEY = 'appointmentDoctorName';
-
-  const {
-    appointmentTitle,
-    appointmentDate,
-    appointmentTime,
-    appointmentDoctorName,
-  } = route.params || {};
-
-  // Retrieves the stored appointment data from AsyncStorage when component mounts
-  useEffect(() => {
-    const getAppointment = async () => {
-      try {
-        const storedTitle = await AsyncStorage.getItem(APPOINTMENT_TITLE_KEY);
-        const storedDate = await AsyncStorage.getItem(APPOINTMENT_DATE_KEY);
-        const storedTime = await AsyncStorage.getItem(APPOINTMENT_TIME_KEY);
-        const storedDoctorName = await AsyncStorage.getItem(
-          APPOINTMENT_DOCTOR_KEY
-        );
-
-        // Set state based on stored values
-        if (storedTitle) setDisplayTitle(storedTitle);
-        if (storedDate) setDisplayDate(formatDate(storedDate));
-        if (storedTime) setDisplayTime(formatTime(storedTime));
-        if (storedDoctorName) setDisplayDoctorName(storedDoctorName);
-      } catch (error) {
-        console.error('Error retrieving appointment:', error);
-      }
-    };
-    getAppointment();
-  }, []);
-
-  // Save appointment data in AsyncStorage if they come from route params
-  useEffect(() => {
-    if (appointmentTitle) {
-      setDisplayTitle(appointmentTitle);
-      AsyncStorage.setItem(APPOINTMENT_TITLE_KEY, appointmentTitle).catch(
-        (error) => console.error('Error saving appointment title:', error)
-      );
-    }
-    if (appointmentDate) {
-      const formattedDate = formatDate(appointmentDate);
-      setDisplayDate(formattedDate);
-      AsyncStorage.setItem(APPOINTMENT_DATE_KEY, appointmentDate).catch(
-        (error) => console.error('Error saving appointment date:', error)
-      );
-    }
-    if (appointmentTime) {
-      const formattedTime = formatTime(appointmentTime);
-      setDisplayTime(formattedTime);
-      AsyncStorage.setItem(APPOINTMENT_TIME_KEY, appointmentTime).catch(
-        (error) => console.error('Error saving appointment time:', error)
-      );
-    }
-    if (appointmentDoctorName) {
-      setDisplayDoctorName(appointmentDoctorName);
-      AsyncStorage.setItem(APPOINTMENT_DOCTOR_KEY, appointmentDoctorName).catch(
-        (error) => console.error('Error saving doctor name:', error)
-      );
-    }
-  }, [
-    appointmentTitle,
-    appointmentDate,
-    appointmentTime,
-    appointmentDoctorName,
-  ]);
+  const [appointments, setAppointments] = useState([]);
+  const [showAll] = useState(false);
 
   // Fetch username from AsyncStorage
   useEffect(() => {
@@ -147,6 +73,20 @@ function MainScreen({ navigation, route }) {
     checkSOSSetup();
   }, []);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const getAppointments = async () => {
+        try {
+          const stored = await AsyncStorage.getItem('appointments');
+          setAppointments(stored ? JSON.parse(stored) : []);
+        } catch (error) {
+          console.error('Error retrieving appointments:', error);
+        }
+      };
+      getAppointments();
+    }, [])
+  );
+
   const handleSetupComplete = async () => {
     try {
       await AsyncStorage.setItem('sosSetup', 'true'); // Save that SOS is set up
@@ -154,6 +94,17 @@ function MainScreen({ navigation, route }) {
       navigation.navigate('SOS'); // Navigate to setup page
     } catch (error) {
       console.error('Error completing SOS setup:', error);
+    }
+  };
+
+  const handleDone = async (index) => {
+    try {
+      const updatedAppointments = [...appointments];
+      updatedAppointments.splice(index, 1);
+      setAppointments(updatedAppointments);
+      await AsyncStorage.setItem('appointments', JSON.stringify(updatedAppointments));
+    } catch (error) {
+      console.error('Error removing appointment:', error);
     }
   };
 
@@ -187,14 +138,16 @@ function MainScreen({ navigation, route }) {
         </View>
       </Modal>
 
-      <View style={container}>
+      <ScrollView contentContainerStyle={container} showsVerticalScrollIndicator={false}>
         <View style={styles.headerRow}>
           <Text style={[baseText, headerText]}>SickleAid</Text>
           <Feather name="bell" size={24} color="black" style={styles.bellIcon} />
         </View>
 
         <View style={headerContainer}>
-          <Text style={[baseText, bodyText]}>Good Morning {username} </Text>
+          <Text style={[baseText, bodyText]}>
+            Good Morning {username ? username.split(' ')[0] : ''}
+          </Text>
         </View>
 
         <View style={carouselContainer}>
@@ -203,16 +156,74 @@ function MainScreen({ navigation, route }) {
 
         <View style={divider}></View>
 
-        {displayTitle && displayDate && displayTime && displayDoctorName ? (
-          <AppointmentSection
-            navigation={navigation}
-            appointmentTitle={displayTitle}
-            appointmentDate={displayDate}
-            appointmentTime={displayTime}
-            appointmentDoctorName={displayDoctorName}
-          />
+        {appointments.length === 0 ? (
+          <View style={{ alignItems: 'center', marginVertical: 32 }}>
+            <Text style={{ color: '#888', fontSize: 16, marginBottom: 16 }}>
+              No appointments yet. Set up one today!
+            </Text>
+            <ButtonComp
+              buttonText="Add an Appointment"
+              buttonSpacing={[styles.buttonSpacing, { backgroundColor: '#FFB703' }]}
+              buttonTextStyle={[styles.buttonTextStyle, { color: '#332E0E' }]}
+              onPress={() => navigation.navigate('SetAppointment')}
+            />
+          </View>
         ) : (
-          <Text>No appointment details available.</Text>
+          <>
+            {(showAll ? appointments : appointments.slice(0, 2)).map((appt, idx) => (
+              <React.Fragment key={idx}>
+                <AppointmentSection
+                  navigation={navigation}
+                  appointmentTitle={appt.title}
+                  appointmentDate={appt.date}
+                  appointmentTime={appt.time}
+                  appointmentDoctorName={appt.doctor}
+                  onEdit={() =>
+                    navigation.navigate('SetAppointment', {
+                      title: appt.title,
+                      date: appt.date,
+                      time: appt.time,
+                      doctor: appt.doctor,
+                    })
+                  }
+                  onDone={() => handleDone(idx)}
+                  style={{ marginBottom: 16 }}
+                />
+                {appointments.length > 2 && !showAll && idx === 1 && (
+                  <View style={{ flexDirection: 'row', justifyContent: 'center', gap: 10, marginBottom: 16 }}>
+                    <ButtonComp
+                      buttonText="View All Appointments"
+                      buttonSpacing={[styles.buttonSpacing, { backgroundColor: '#2196F3' }]}
+                      buttonTextStyle={[styles.buttonTextStyle, { color: '#fff' }]}
+                      onPress={() => navigation.navigate('AllAppointmentsScreen')}
+                    />
+                    <ButtonComp
+                      buttonText="Add an Appointment"
+                      buttonSpacing={[styles.buttonSpacing, { backgroundColor: '#FFB703' }]}
+                      buttonTextStyle={[styles.buttonTextStyle, { color: '#332E0E' }]}
+                      onPress={() => navigation.navigate('SetAppointment')}
+                    />
+                  </View>
+                )}
+              </React.Fragment>
+            ))}
+            {showAll && (
+              <ButtonComp
+                buttonText="Add an Appointment"
+                buttonSpacing={[styles.buttonSpacing, { backgroundColor: '#FFB703' }]}
+                buttonTextStyle={[styles.buttonTextStyle, { color: '#332E0E' }]}
+                onPress={() => navigation.navigate('SetAppointment')}
+              />
+            )}
+            {appointments.length <= 2 && (
+              <ButtonComp
+                buttonText="Add an Appointment"
+                buttonSpacing={[styles.buttonSpacing, { backgroundColor: '#FFB703', marginTop: 10 }]}
+                buttonTextStyle={[styles.buttonTextStyle, { color: '#332E0E' }]}
+                onPress={() => navigation.navigate('SetAppointment')}
+              />
+            )}
+          </>
         )}
 
         <View style={divider}></View>
@@ -221,7 +232,7 @@ function MainScreen({ navigation, route }) {
         <View style={helpContainer}>
           <HelpButton navigation={navigation} />
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -232,7 +243,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   container: {
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
     paddingHorizontal: 21,
   },
@@ -257,7 +268,7 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     width: '100%',
-    flex: 1,
+    // flex: 1,
     paddingTop: 26.09,
     maxHeight: 200,
   },
@@ -281,6 +292,7 @@ const styles = StyleSheet.create({
     height: 0.5,
     backgroundColor: '#332e0e80',
     marginVertical: 10,
+    marginTop: 30,
   },
 
   buttonTextStyle: {

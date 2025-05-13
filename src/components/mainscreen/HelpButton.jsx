@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
-import helpIcon from '../../assets/icons/help-icon.png';
-import SosScreen from '../screens/SosScreen';
+import { TouchableOpacity, Text, Image, StyleSheet } from 'react-native';
+import PropTypes from 'prop-types';
+import helpIcon from '../../../assets/icons/help-icon.png';
 
 function HelpButton(props) {
   const { navigation } = props;
@@ -35,5 +35,10 @@ const styles = StyleSheet.create({
     color: '#009444',
   },
 });
+HelpButton.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default HelpButton;
