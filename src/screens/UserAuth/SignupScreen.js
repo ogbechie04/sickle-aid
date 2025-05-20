@@ -18,8 +18,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ToastManager, { Toast } from 'toastify-react-native';
 
-import API_URL from '../config/api';
-import PasswordStrengthMeter from '../components/PasswordStrengthMeter';
+import API_URL from '../../config/api';
+import PasswordStrengthMeter from '../../components/PasswordStrengthMeter';
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
@@ -187,7 +187,7 @@ const SignUpScreen = () => {
       >
         <Image
           // eslint-disable-next-line no-undef
-          source={require('../../assets/Googlelogo.png')}
+          source={require('../../../assets/Googlelogo.png')}
           style={styles.googleLogo}
         />
         <Text>Sign up with Google</Text>

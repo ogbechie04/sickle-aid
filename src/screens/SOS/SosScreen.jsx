@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Feather from '@expo/vector-icons/Feather';
-import SOSLocationCard from '../components/mainscreen/SosLocationSection';
+import SOSLocationCard from '../../components/mainscreen/SosLocationSection';
 import PropTypes from 'prop-types';
 
 /**

@@ -18,7 +18,7 @@ const LovedOnesScreen = () => {
       <View style={styles.content}>
         <Image
           // eslint-disable-next-line no-undef
-          source={require('../../assets/lovedones.jpg')}
+          source={require('../../../assets/lovedones.jpg')}
           style={styles.image}
         />
         <Text style={styles.title}>LOVED ONES</Text>

@@ -17,7 +17,7 @@ import axios from 'axios';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-import API_URL from '../config/api';
+import API_URL from '../../config/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignInScreen = () => {
@@ -94,24 +94,25 @@ const SignInScreen = () => {
         password,
       });
 
-      console.log(response.data);
+      // Log the raw response data
+      console.log('Login response:', response.data);
 
-      const username = response.data.user.username;
-      const userId = response.data.user.id;
-      // console.log(userId);
+      // Save the entire response (including user object) to AsyncStorage
+      await AsyncStorage.setItem('user', JSON.stringify(response.data));
 
-      AsyncStorage.setItem('userId', userId);
+      // Fetch it back and log to confirm
+      const storedUser = await AsyncStorage.getItem('user');
+      console.log('Stored user in AsyncStorage:', storedUser);
 
-      // console.log(response)
       setLoading(false);
 
       if (response.status === 200) {
         alert('Successfully signed in', response.data.message);
-        navigation.navigate('MainApp', username);
+        navigation.navigate('MainApp', response.data.user.username);
       } else {
         Alert.alert(
           'Error',
-          result.message || 'Login failed. Please try again.'
+          response.data.message || 'Login failed. Please try again.'
         );
       }
     } catch (error) {
@@ -179,6 +180,13 @@ const SignInScreen = () => {
         )}
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.signupPrompt}>
+          {"Don't have an account with us? "}
+          <Text style={styles.signupLink}>Sign up here</Text>
+        </Text>
+      </TouchableOpacity>
+
       <TouchableOpacity onPress={() => navigation.navigate('emailcheck')}>
         <Text style={styles.forgotPassword}>Forgot Password?</Text>
       </TouchableOpacity>
@@ -191,7 +199,7 @@ const SignInScreen = () => {
 
       <TouchableOpacity disabled={loading} style={styles.googleButton}>
         <Image
-          source={require('../../assets/Googlelogo.png')}
+          source={require('../../../assets/Googlelogo.png')}
           style={styles.googleLogo}
         />
         <Text>Sign in with Google</Text>
@@ -250,6 +258,16 @@ const styles = StyleSheet.create({
   forgotPassword: {
     textAlign: 'center',
     marginBottom: 20,
+  },
+  signupPrompt: {
+    textAlign: 'center',
+    marginBottom: 16,
+    color: '#555',
+  },
+  signupLink: {
+    color: '#0B9444',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
   },
   divider: {
     flexDirection: 'row',

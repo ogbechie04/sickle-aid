@@ -9,6 +9,10 @@ const SignInOptionsScreen = () => {
   const navigation = useNavigation();
   const [selectedRelation, setSelectedRelation] = useState('');
 
+  const handlePSCPress = () => {
+    setSelectedRelation('PSC');
+  };
+
   const handlePickerChange = (itemValue) => {
     setSelectedRelation(itemValue);
   };
@@ -16,7 +20,11 @@ const SignInOptionsScreen = () => {
   const handleSubmit = async () => {
     try {
       await AsyncStorage.setItem('selectedRelation', selectedRelation);
-      navigation.navigate('PersonalInfo', { relation: selectedRelation });
+      if (selectedRelation === 'PSC') {
+        navigation.navigate('PersonalInfo', { relation: selectedRelation });
+      } else if (selectedRelation) {
+        navigation.navigate('RelationInfo', { relation: selectedRelation });
+      }
     } catch (error) {
       console.error('Error storing relation in AsyncStorage:', error);
     }
@@ -26,13 +34,26 @@ const SignInOptionsScreen = () => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Select the applicable option</Text>
 
-      <TouchableOpacity style={styles.PSC}>
+      <TouchableOpacity
+        style={[
+          styles.PSC,
+          selectedRelation === 'PSC' && styles.selectedOption,
+        ]}
+        onPress={handlePSCPress}
+      >
         <Text style={styles.PSCText}>Person with Sickle Cell (PSC)</Text>
       </TouchableOpacity>
 
-      <View style={styles.pickerContainer}>
+      <View
+        style={[
+          styles.pickerContainer,
+          selectedRelation !== 'PSC' &&
+            selectedRelation !== '' &&
+            styles.selectedOption,
+        ]}
+      >
         <Picker
-          selectedValue={selectedRelation}
+          selectedValue={selectedRelation === 'PSC' ? '' : selectedRelation}
           onValueChange={handlePickerChange}
           style={styles.picker}
           itemStyle={styles.pickerItem}
@@ -50,7 +71,11 @@ const SignInOptionsScreen = () => {
         </Picker>
       </View>
 
-      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+      <TouchableOpacity
+        style={[styles.submitButton, !selectedRelation && { opacity: 0.5 }]}
+        onPress={handleSubmit}
+        disabled={!selectedRelation}
+      >
         <Text style={styles.submitButtonText}>Submit</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -81,6 +106,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
     paddingTop: 10,
     paddingLeft: 10,
+    justifyContent: 'center',
   },
   PSCText: {
     color: 'black',
@@ -88,18 +114,24 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '100%',
-    backgroundColor: 'palegoldenred',
+    backgroundColor: 'palegoldenrod',
     borderWidth: 1,
     borderRadius: 10,
     borderColor: 'black',
     marginBottom: 50,
     height: 50,
+    justifyContent: 'center',
   },
   picker: {
     height: 50,
   },
   pickerItem: {
-    color: 'palegoldenred',
+    color: 'black',
+  },
+  selectedOption: {
+    borderLeftWidth: 5,
+    borderLeftColor: 'forestgreen',
+    backgroundColor: '#eafbe7',
   },
   submitButton: {
     backgroundColor: 'forestgreen',

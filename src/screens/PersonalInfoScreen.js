@@ -14,7 +14,7 @@ import {
   Alert,
   ActivityIndicator, // Import ActivityIndicator
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
@@ -31,13 +31,15 @@ z.setErrorMap((issue, ctx) => {
 });
 
 const PersonalInfoScreen = () => {
+  const route = useRoute();
+  const navigation = useNavigation();
+  const [editable, setEditable] = useState(route.params?.editable ?? false);
+
   const [username, setUsername] = useState('');
   const [userEmail, setEmail] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
   const [relation, setRelation] = useState('');
-  const [profileImage, setProfileImage] = useState(
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSKAYL6jLWu96azBLYuApNGc4mLX_oqgjJAg&s'
-  );
+  const [profileImage, setProfileImage] = useState(null);
 
   // Additional form fields
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -51,6 +53,7 @@ const PersonalInfoScreen = () => {
   const [memberID, setMemberID] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
   const [emergencyContactError, setEmergencyContactError] = useState('');
+  const [emergencyContactRelation, setEmergencyContactRelation] = useState('');
 
   const [loading, setLoading] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -62,36 +65,40 @@ const PersonalInfoScreen = () => {
       'Phone number must contain only digits and be between 7 and 15 characters long.',
   });
 
-  const navigation = useNavigation();
-
   useEffect(() => {
-    const fetchStoredData = async () => {
-      try {
-        const storedEmail = await AsyncStorage.getItem('userEmail');
-        const storedRelation = await AsyncStorage.getItem('selectedRelation');
-        const storedId = await AsyncStorage.getItem('userId');
-
-        if (storedEmail) setEmail(storedEmail);
-        if (storedRelation) setRelation(storedRelation);
-        if (storedId) setUserId(storedId);
-
-        console.log('Data retrieved:', {
-          storedEmail,
-          storedRelation,
-          storedId,
-        });
-      } catch (error) {
-        console.error('Error retrieving stored data:', error);
+    const fetchUserData = async () => {
+      const userDataString = await AsyncStorage.getItem('user');
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        const user = userData.user;
+        setUsername(user.username || '');
+        setEmail(user.email || '');
+        setSelectedValue(user.gender || '');
+        setRelation(user.relation || '');
+        setProfileImage(user.profileImage || null);
+        setPhoneNumber(user.phoneNumber || '');
+        setDateOfBirth(user.dateOfBirth || '');
+        setBloodGroup(user.bloodGroup || '');
+        setAllergies(user.allergies || '');
+        setMedication(user.medication || '');
+        setHMO(user.HMO || '');
+        setMemberID(user.memberID || '');
+        setEmergencyContact(user.emergencyContact || '');
+        setAllergyType(user.allergyType || '');
+        setEmergencyContactRelation(user.emergencyContactRelation || '');
+        setUserId(user._id || '');
       }
     };
 
-    fetchStoredData();
+    // Only prefill if not coming from onboarding (e.g., check a param)
+    if (!route.params?.fromOnboarding) {
+      fetchUserData();
+    }
   }, []);
 
   const pickImage = async () => {
     const permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
-
     if (!permissionResult.granted) {
       Alert.alert(
         'Permission required',
@@ -99,14 +106,12 @@ const PersonalInfoScreen = () => {
       );
       return;
     }
-
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ImagePicker.MediaType.IMAGE,
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.7,
     });
-
     if (!result.canceled) {
       setProfileImage(result.assets[0].uri);
     }
@@ -166,6 +171,7 @@ const PersonalInfoScreen = () => {
         HMO,
         memberID,
         emergencyContact,
+        emergencyContactRelation,
         relation: relation || '',
       };
 
@@ -201,7 +207,7 @@ const PersonalInfoScreen = () => {
         {/* Back Button */}
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => navigation.navigate('SignIn')}
+          onPress={() => navigation.goBack()}
         >
           <Feather name="arrow-left" size={24} color="black" />
         </TouchableOpacity>
@@ -224,6 +230,7 @@ const PersonalInfoScreen = () => {
             style={styles.input}
             placeholder="Full Name"
             value={username}
+            editable={editable} // Incorporate the suggested code change
             onChangeText={setUsername}
           />
           <View style={styles.input}>
@@ -364,7 +371,37 @@ const PersonalInfoScreen = () => {
           {emergencyContactError ? (
             <Text style={styles.errorText}>{emergencyContactError}</Text>
           ) : null}
+          <View style={styles.gender}>
+            <Picker
+              selectedValue={emergencyContactRelation}
+              onValueChange={setEmergencyContactRelation}
+              style={{ color: 'grey' }}
+            >
+              <Picker.Item
+                label="Relation to Emergency Contact"
+                value=""
+                enabled={false}
+              />
+              <Picker.Item label="Father" value="father" />
+              <Picker.Item label="Mother" value="mother" />
+              <Picker.Item label="Sibling" value="sibling" />
+              <Picker.Item label="Spouse" value="spouse" />
+              <Picker.Item label="Friend" value="friend" />
+              <Picker.Item label="Guardian" value="guardian" />
+              <Picker.Item label="Other" value="other" />
+            </Picker>
+          </View>
         </View>
+
+        {/* Edit Button - Shown only when not editable */}
+        {!editable && (
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={() => setEditable(true)}
+          >
+            <Text style={styles.editButtonText}>Edit</Text>
+          </TouchableOpacity>
+        )}
 
         {/* Submit Button */}
         <TouchableOpacity
@@ -415,6 +452,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 15,
     padding: 5,
+  },
+  editButtonText: {
+    color: 'white',
+    fontSize: 16,
   },
   title: {
     fontSize: 20,

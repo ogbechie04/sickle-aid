@@ -1,9 +1,11 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image } from 'react-native';
+import { useNavigation } from '@react-navigation/native'; // <-- Add this import
 import ButtonComp from './Button';
 import commImage from '../../../assets/comm.png';
 
 function CommunitySection() {
+  const navigation = useNavigation(); // <-- Add this line
   const {
     communityContainer,
     commImageTextContainer,
@@ -35,6 +37,9 @@ function CommunitySection() {
           buttonSpacing={[enterButton]}
           buttonText={'Join'}
           buttonTextStyle={[baseText, buttonTextStyle, enterButtonText]}
+          onPress={() => {
+            navigation.navigate('Community');
+          }}
         />
       </View>
     </View>

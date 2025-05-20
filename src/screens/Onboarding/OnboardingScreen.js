@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const CommunityScreen = () => {
+const OnboardingScreen = () => {
   const navigation = useNavigation();
 
   return (
@@ -17,20 +17,23 @@ const CommunityScreen = () => {
       <View style={styles.content}>
         <Image
           // eslint-disable-next-line no-undef
-          source={require('../../assets/communitypic.jpg')}
+          source={require('../../../assets/childonboard.jpg')}
           style={styles.image}
         />
-        <Text style={styles.title}>COMMUNITY</Text>
+        <Text style={styles.title}>PSC</Text>
         <Text style={styles.description}>
-          A dedicated community platform with secure chat functionalities.
+          Making it easier for people with sickle cell to get the medical help
+          they need, especially during a crisis.
         </Text>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('SignUp')}
-        >
-          <Text style={styles.buttonText}>Next</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text
+            style={styles.buttonText}
+            onPress={() => navigation.navigate('LovedOnes')}
+          >
+            Next
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+        <TouchableOpacity>
           <Text
             style={styles.skipText}
             onPress={() => navigation.navigate('SignUp')}
@@ -40,9 +43,9 @@ const CommunityScreen = () => {
         </TouchableOpacity>
       </View>
       <View style={styles.pagination}>
-        <View style={styles.paginationDot} />
-        <View style={styles.paginationDot} />
         <View style={[styles.paginationDot, styles.activeDot]} />
+        <View style={styles.paginationDot} />
+        <View style={styles.paginationDot} />
       </View>
     </SafeAreaView>
   );
@@ -108,4 +111,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CommunityScreen;
+export default OnboardingScreen;

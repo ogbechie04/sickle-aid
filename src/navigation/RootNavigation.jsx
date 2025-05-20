@@ -6,18 +6,18 @@ import { Image } from 'react-native';
 // Import your screen components
 import MainScreen from '../screens/MainScreen';
 import SetAppointment from '../components/mainscreen/SetAppointment';
-import SosScreen from '../screens/SosScreen';
-import OnboardingScreen from '../screens/OnboardingScreen';
-import LovedOnesScreen from '../screens/LovedOnesScreen';
-import CommunityScreen from '../screens/CommunityScreen';
-import SignUpScreen from '../screens/SignupScreen';
-import SignInScreen from '../screens/SigninScreen';
-import SignInOptionsScreen from '../screens/SigninOptions';
+import SosScreen from '../screens/SOS/SosScreen';
+import OnboardingScreen from '../screens/Onboarding/OnboardingScreen';
+import LovedOnesScreen from '../screens/Onboarding/LovedOnesScreen';
+import CommunityScreen from '../screens/Onboarding/CommunityScreen';
+import SignUpScreen from '../screens/UserAuth/SignupScreen';
+import SignInScreen from '../screens/UserAuth/SigninScreen';
+import SignInOptionsScreen from '../screens/UserAuth/SigninOptions';
 import PersonalInfoScreen from '../screens/PersonalInfoScreen';
 import CheckEmail from '../screens/checkEmail';
-import UpdatePassword from '../screens/updatePassword';
-import HospitalInformation from '../screens/HospitalInformationScreen';
-import OfficeInformation from '../screens/OfficeInformationScreen';
+import UpdatePassword from '../screens/UserAuth/updatePassword';
+import HospitalInformation from '../screens/SOS/HospitalInformationScreen';
+import OfficeInformation from '../screens/SOS/OfficeInformationScreen';
 import CommunityPage from '../screens/CommunityPage';
 import GeneralCommunityScreen from '../screens/GeneralCommunityScreen';
 import SettingsScreen from '../screens/SettingsScreen';
@@ -25,6 +25,7 @@ import PaymentPlanScreen from '../screens/PaymentPlanScreen';
 import PaymentMethodScreen from '../screens/PaymentMethodScreen';
 import ContactScreen from '../screens/ContactScreen';
 import AllAppointmentsScreen from '../screens/AllAppointmentsScreen';
+import RelationProfileScreen from '../screens/Relations/RelationInfoScreen';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
@@ -71,6 +72,9 @@ function SettingsStack() {
       <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
       <Stack.Screen name="PaymentPlanScreen" component={PaymentPlanScreen} />
       <Stack.Screen name="PaymentMethodScreen" component={PaymentMethodScreen} />
+      <Stack.Screen name="PersonalInfoSettings" component={PersonalInfoScreen} />
+
+      
     </Stack.Navigator>
   );
 }
@@ -188,6 +192,7 @@ function RootNavigator() {
       <Stack.Screen name="Community" component={CommunityScreen} />
       <Stack.Screen name="GeneralCommunity" component={GeneralCommunityScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
+      <Stack.Screen name="RelationInfo" component={RelationProfileScreen} />
       <Stack.Screen name="MainApp" component={TabNavigator} />
     </Stack.Navigator>
   );

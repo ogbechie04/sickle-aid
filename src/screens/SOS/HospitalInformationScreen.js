@@ -13,7 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import Feather from '@expo/vector-icons/Feather';
-import API_URL from '../config/api';
+import API_URL from '../../config/api';
 
 function HospitalSetupScreen({ navigation }) {
   // API Service

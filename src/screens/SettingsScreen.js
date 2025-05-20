@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -18,19 +19,15 @@ const SettingsScreen = () => {
 
   // Simulate fetching user profile from database
   useEffect(() => {
-    // Replace this with your actual database fetch
     const fetchUserProfile = async () => {
       try {
-        // Mock data - replace with actual API call
-        const userData = {
-          name: 'Gift Haruna',
-          accountType: 'PSC',
-          // eslint-disable-next-line no-undef
-          profileImage: require('../../assets/GHProf.png'), // Replace with your image path
-          verified: true,
-        };
-
-        setUserProfile(userData);
+        const userDataString = await AsyncStorage.getItem('user');
+        console.log('Fetched userDataString:', userDataString); // <-- Debug log
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          console.log('Parsed userData:', userData); // <-- Debug log
+          setUserProfile(userData);
+        }
       } catch (error) {
         console.error('Error fetching user profile:', error);
       } finally {
@@ -46,7 +43,7 @@ const SettingsScreen = () => {
       id: 'personal',
       title: 'Personal Information',
       icon: 'person-outline',
-      screen: 'PersonalInformation',
+      screen: 'PersonalInfo', // <-- Fix here
     },
     {
       id: 'notification',
@@ -74,10 +71,16 @@ const SettingsScreen = () => {
     },
   ];
 
-  const handleLogout = () => {
-    // Implement your logout logic here
-    console.log('Logging out...');
-    // navigation.navigate('Login');
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'SignIn' }],
+      });
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   if (loading) {
@@ -102,22 +105,39 @@ const SettingsScreen = () => {
           {/* User Profile Section */}
           <View style={styles.profileSection}>
             <View style={styles.profileImageContainer}>
-              <Image
-                source={userProfile.profileImage}
-                style={styles.profileImage}
-              />
+              {userProfile?.user?.profileImage ? (
+                <Image
+                  source={{ uri: userProfile.user.profileImage }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.profileImage,
+                    {
+                      backgroundColor: '#e0e0e0',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    },
+                  ]}
+                >
+                  <Ionicons name="person" size={48} color="#aaa" />
+                </View>
+              )}
             </View>
             <View style={styles.profileInfo}>
               <View style={styles.nameContainer}>
-                <Text style={styles.profileName}>{userProfile.name}</Text>
-                {userProfile.verified && (
+                <Text style={styles.profileName}>
+                  {userProfile?.user?.username || 'User'}
+                </Text>
+                {userProfile?.verified && (
                   <View style={styles.verifiedBadge}>
                     <Ionicons name="checkmark" size={14} color="#fff" />
                   </View>
                 )}
               </View>
               <Text style={styles.accountType}>
-                Account type - {userProfile.accountType}
+                Account type - {userProfile?.user?.relation || 'N/A'}
               </Text>
               <TouchableOpacity style={styles.inviteButton}>
                 <Text style={styles.inviteButtonText}>Invite</Text>
@@ -131,7 +151,17 @@ const SettingsScreen = () => {
               <TouchableOpacity
                 key={option.id}
                 style={styles.optionItem}
-                onPress={() => navigation.navigate(option.screen)}
+                onPress={() => {
+                  if (option.id === 'personal') {
+                    // Always use this for nested stack navigation from a tab:
+                    navigation.navigate('Settings', {
+                      screen: 'PersonalInfoSettings',
+                      params: { editable: false },
+                    });
+                  } else {
+                    navigation.navigate(option.screen);
+                  }
+                }}
               >
                 <View style={styles.optionIconContainer}>
                   <Ionicons name={option.icon} size={20} color="#000" />
