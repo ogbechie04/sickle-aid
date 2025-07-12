@@ -1,0 +1,431 @@
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  SafeAreaView,
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const LOCATION_TITLES = [
+  { label: 'Home', value: 'home', icon: 'home-outline' },
+  { label: 'Office', value: 'office', icon: 'briefcase-outline' },
+  { label: 'Custom', value: 'custom', icon: 'location-outline' },
+];
+
+const LocationFormScreen = ({ navigation, route }) => {
+  const { locationType = 'primary' } = route.params || {};
+  const [title, setTitle] = useState('');
+  const [landmark, setLandmark] = useState('');
+  const [flatNumber, setFlatNumber] = useState('');
+  const [address, setAddress] = useState('');
+  const [localGovernment, setLocalGovernment] = useState('');
+  const [customName, setCustomName] = useState('');
+
+  const handleSubmit = async () => {
+    if (
+      !title ||
+      !landmark ||
+      !address ||
+      !localGovernment ||
+      (title === 'custom' && !customName)
+    ) {
+      Alert.alert('Error', 'Please fill all required fields.');
+      return;
+    }
+
+    const payload = {
+      locationType,
+      title,
+      customName: title === 'custom' ? customName : '',
+      landmark,
+      flatNumber,
+      address,
+      localGovernment,
+      state: 'Lagos',
+    };
+
+    console.log('Location payload to backend:', payload);
+
+    // --- TEMPORARY LOCAL STORAGE ---
+    try {
+      // Get existing locations or start with empty array
+      const existing = await AsyncStorage.getItem('locations');
+      let locations = existing ? JSON.parse(existing) : [];
+
+      // Replace if updating, or add new
+      const idx = locations.findIndex(
+        (loc) => loc.locationType === locationType
+      );
+      if (idx > -1) {
+        locations[idx] = payload;
+      } else {
+        locations.push(payload);
+      }
+
+      await AsyncStorage.setItem('locations', JSON.stringify(locations));
+      console.log('Saved locations locally:', locations);
+    } catch (e) {
+      console.error('Failed to save location locally:', e);
+    }
+    // --- END TEMPORARY LOCAL STORAGE ---
+
+    Alert.alert('Success', `${locationType} location saved successfully!`, [
+      {
+        text: 'OK',
+        onPress: async () => {
+          if (locationType === 'primary') {
+            navigation.navigate('LocationForm', { locationType: 'secondary' });
+          } else {
+            // Attach locations to user object in AsyncStorage
+            try {
+              // Get user object
+              const userDataString = await AsyncStorage.getItem('user');
+              const userData = userDataString ? JSON.parse(userDataString) : {};
+
+              // Get locations array
+              const locationsString = await AsyncStorage.getItem('locations');
+              const locations = locationsString
+                ? JSON.parse(locationsString)
+                : [];
+
+              // Attach locations to user object
+              const updatedUserData = {
+                ...userData,
+                user: {
+                  ...(userData.user || {}),
+                  locations: locations,
+                },
+              };
+
+              // Save back to AsyncStorage
+              await AsyncStorage.setItem(
+                'user',
+                JSON.stringify(updatedUserData)
+              );
+              console.log(
+                'User object after attaching locations:',
+                updatedUserData
+              );
+
+              // Now navigate to MainApp
+              navigation.navigate('MainApp');
+            } catch (e) {
+              console.error('Failed to attach locations to user object:', e);
+              navigation.navigate('MainApp'); // Still navigate to main app
+            }
+          }
+        },
+      },
+    ]);
+  };
+
+  return (
+    <SafeAreaView style={styles.wrapper}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={24} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.helpButton}>
+          <Ionicons name="help-circle-outline" size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.titleSection}>
+          <Text style={styles.mainTitle}>
+            {locationType === 'primary'
+              ? 'Primary Location'
+              : 'Secondary Location'}
+          </Text>
+          <Text style={styles.subtitle}>
+            {locationType === 'primary'
+              ? 'Where do you spend most of your day?'
+              : 'Add another important location'}
+          </Text>
+        </View>
+
+        <View style={styles.formSection}>
+          <Text style={styles.label}>Title</Text>
+          <View style={styles.titleOptionsContainer}>
+            {LOCATION_TITLES.map((option) => (
+              <TouchableOpacity
+                key={option.value}
+                style={[
+                  styles.titleOption,
+                  title === option.value && styles.selectedTitleOption,
+                ]}
+                onPress={() => setTitle(option.value)}
+              >
+                <Ionicons
+                  name={option.icon}
+                  size={18}
+                  color={title === option.value ? '#fff' : 'forestgreen'}
+                  style={styles.titleIcon}
+                />
+                <Text
+                  style={[
+                    styles.titleOptionText,
+                    title === option.value && styles.selectedTitleOptionText,
+                  ]}
+                >
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Move the custom name input here */}
+          {title === 'custom' && (
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Name this location *</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="e.g. Gym, Hospital, Aunt’s House"
+                placeholderTextColor="#999"
+                value={customName}
+                onChangeText={setCustomName}
+              />
+            </View>
+          )}
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Landmark *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Near City Mall"
+              placeholderTextColor="#999"
+              value={landmark}
+              onChangeText={setLandmark}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Flat/House Number</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Flat 2B, House 15"
+              placeholderTextColor="#999"
+              value={flatNumber}
+              onChangeText={setFlatNumber}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Street Address *</Text>
+            <TextInput
+              style={[styles.input, styles.multilineInput]}
+              placeholder="Enter full street address"
+              placeholderTextColor="#999"
+              value={address}
+              onChangeText={setAddress}
+              multiline
+              numberOfLines={2}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Local Government *</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. Ikeja, Surulere"
+              placeholderTextColor="#999"
+              value={localGovernment}
+              onChangeText={setLocalGovernment}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>State</Text>
+            <View style={styles.stateContainer}>
+              <TouchableOpacity style={styles.stateOption} disabled>
+                <Ionicons
+                  name="location"
+                  size={18}
+                  color="forestgreen"
+                  style={styles.stateIcon}
+                />
+                <Text style={styles.stateText}>Lagos</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+
+        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.submitText}>Save Location</Text>
+        </TouchableOpacity>
+
+        <View style={styles.bottomSpacing} />
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  header: {
+    paddingTop: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  backButton: {
+    padding: 8,
+  },
+  helpButton: {
+    padding: 8,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  titleSection: {
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+  },
+  mainTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: 'black',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  formSection: {
+    paddingHorizontal: 24,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  titleOptionsContainer: {
+    flexDirection: 'row',
+    marginBottom: 24,
+    gap: 12,
+  },
+  titleOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 25,
+    borderWidth: 1.5,
+    borderColor: 'forestgreen',
+    backgroundColor: '#fff',
+    flex: 1,
+    justifyContent: 'center',
+  },
+  selectedTitleOption: {
+    backgroundColor: 'forestgreen',
+    borderColor: 'forestgreen',
+  },
+  titleIcon: {
+    marginRight: 6,
+  },
+  titleOptionText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: 'black',
+  },
+  selectedTitleOptionText: {
+    color: '#fff',
+  },
+  inputGroup: {
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    fontSize: 16,
+    backgroundColor: '#fff',
+    color: '#333',
+  },
+  multilineInput: {
+    borderRadius: 15,
+    textAlignVertical: 'top',
+  },
+  stateContainer: {
+    flexDirection: 'row',
+  },
+  stateOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    borderWidth: 1.5,
+    borderColor: 'forestgreen',
+    backgroundColor: '#fff',
+  },
+  stateIcon: {
+    marginRight: 8,
+  },
+  stateText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: 'forestgreen',
+  },
+  submitButton: {
+    backgroundColor: 'forestgreen',
+    marginHorizontal: 24,
+    marginTop: 32,
+    paddingVertical: 16,
+    borderRadius: 25,
+    alignItems: 'center',
+    shadowColor: 'forestgreen',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  submitText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  bottomSpacing: {
+    height: 40,
+  },
+});
+
+LocationFormScreen.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+    goBack: PropTypes.func.isRequired,
+  }).isRequired,
+  route: PropTypes.shape({
+    params: PropTypes.object,
+  }),
+};
+
+export default LocationFormScreen;

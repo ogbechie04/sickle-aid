@@ -154,9 +154,9 @@ const SettingsScreen = () => {
                 onPress={() => {
                   if (option.id === 'personal') {
                     // Always use this for nested stack navigation from a tab:
-                    navigation.navigate('Settings', {
-                      screen: 'PersonalInfoSettings',
-                      params: { editable: false },
+                    navigation.navigate('PersonalInfoSettings', {
+                      editable: false,
+                      fromOnboarding: false,
                     });
                   } else {
                     navigation.navigate(option.screen);

@@ -26,6 +26,7 @@ import PaymentMethodScreen from '../screens/PaymentMethodScreen';
 import ContactScreen from '../screens/ContactScreen';
 import AllAppointmentsScreen from '../screens/AllAppointmentsScreen';
 import RelationProfileScreen from '../screens/Relations/RelationInfoScreen';
+import LocationFormScreen from '../screens/Onboarding/LocationFormScreen';
 
 // Import your icons
 import homeIcon from '../../assets/icons/Home-6-white.png';
@@ -193,6 +194,7 @@ function RootNavigator() {
       <Stack.Screen name="GeneralCommunity" component={GeneralCommunityScreen} />
       <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen} />
       <Stack.Screen name="RelationInfo" component={RelationProfileScreen} />
+      <Stack.Screen name="LocationForm" component={LocationFormScreen} />
       <Stack.Screen name="MainApp" component={TabNavigator} />
     </Stack.Navigator>
   );

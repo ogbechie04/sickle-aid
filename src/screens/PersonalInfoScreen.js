@@ -20,7 +20,7 @@ import { Feather } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
-import axios from 'axios'; // Assuming axios is being used for API requests
+import axios from 'axios';
 import API_URL from '../config/api';
 import { z } from 'zod';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -34,11 +34,12 @@ const PersonalInfoScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [editable, setEditable] = useState(route.params?.editable ?? false);
+  const fromOnboarding = route.params?.fromOnboarding ?? false;
 
   const [username, setUsername] = useState('');
   const [userEmail, setEmail] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
-  const [relation, setRelation] = useState('');
+  const [relation, setRelation] = useState(route.params?.relation || '');
   const [profileImage, setProfileImage] = useState(null);
 
   // Additional form fields
@@ -67,33 +68,49 @@ const PersonalInfoScreen = () => {
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const userDataString = await AsyncStorage.getItem('user');
-      if (userDataString) {
-        const userData = JSON.parse(userDataString);
-        const user = userData.user;
-        setUsername(user.username || '');
-        setEmail(user.email || '');
-        setSelectedValue(user.gender || '');
-        setRelation(user.relation || '');
-        setProfileImage(user.profileImage || null);
-        setPhoneNumber(user.phoneNumber || '');
-        setDateOfBirth(user.dateOfBirth || '');
-        setBloodGroup(user.bloodGroup || '');
-        setAllergies(user.allergies || '');
-        setMedication(user.medication || '');
-        setHMO(user.HMO || '');
-        setMemberID(user.memberID || '');
-        setEmergencyContact(user.emergencyContact || '');
-        setAllergyType(user.allergyType || '');
-        setEmergencyContactRelation(user.emergencyContactRelation || '');
-        setUserId(user._id || '');
+      let userId = null;
+      let user = null;
+
+      if (route.params?.fromOnboarding) {
+        // Onboarding flow: get userId from AsyncStorage
+        userId = await AsyncStorage.getItem('userId');
+        const userEmail = await AsyncStorage.getItem('userEmail');
+        setUserId(userId);
+        setEmail(userEmail || '');
+      } else {
+        // Returning user: get user object from AsyncStorage
+        const userDataString = await AsyncStorage.getItem('user');
+        console.log('userDataString:', userDataString);
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          user = userData.user;
+          userId = user?._id;
+          setUserId(userId);
+
+          setUsername(user.username || '');
+          setEmail(user.email || '');
+          setSelectedValue(user.gender || '');
+          setRelation(user.relation || '');
+          setProfileImage(user.profileImage || null);
+          setPhoneNumber(user.phoneNumber || '');
+          setDateOfBirth(user.dateOfBirth || '');
+          setBloodGroup(user.bloodGroup || '');
+          setAllergies(user.allergies || '');
+          setMedication(user.medication || '');
+          setHMO(user.HMO || '');
+          setMemberID(user.memberID || '');
+          setEmergencyContact(user.emergencyContact || '');
+          setAllergyType(user.allergyType || '');
+          setEmergencyContactRelation(user.emergencyContactRelation || '');
+        }
+      }
+
+      if (!userId) {
+        Alert.alert('Error', 'User ID not found. Please log in again.');
       }
     };
 
-    // Only prefill if not coming from onboarding (e.g., check a param)
-    if (!route.params?.fromOnboarding) {
-      fetchUserData();
-    }
+    fetchUserData();
   }, []);
 
   const pickImage = async () => {
@@ -143,6 +160,17 @@ const PersonalInfoScreen = () => {
 
   const handleProfileUpdate = async () => {
     try {
+      const userDataString = await AsyncStorage.getItem('user');
+      const userData = JSON.parse(userDataString);
+      const userId = userData?.userId; // Use this instead of userData?.user?._id
+      console.log('userId:', userId);
+
+      const idToUse = userId;
+      if (!idToUse) {
+        Alert.alert('Error', 'User ID not found. Please log in again.');
+        return;
+      }
+
       // Validate phone number and emergency contact
       phoneNumberSchema.parse(phoneNumber);
       phoneNumberSchema.parse(emergencyContact);
@@ -159,8 +187,8 @@ const PersonalInfoScreen = () => {
 
       const data = {
         userId,
+        email: userEmail,
         username,
-        profileImage,
         gender: selectedValue,
         phoneNumber,
         dateOfBirth,
@@ -175,6 +203,17 @@ const PersonalInfoScreen = () => {
         relation: relation || '',
       };
 
+      // Only add profileImage if it is a non-empty string
+      if (
+        profileImage &&
+        typeof profileImage === 'string' &&
+        profileImage.trim() !== ''
+      ) {
+        data.profileImage = profileImage;
+      }
+
+      console.log('Payload:', data);
+
       setLoading(true);
       const response = await axios.put(
         `${API_URL}/users/${userId}/profile`,
@@ -185,13 +224,19 @@ const PersonalInfoScreen = () => {
       // Update username state and save to AsyncStorage
       setUsername(updatedUsername);
       await AsyncStorage.setItem('username', updatedUsername);
+      await AsyncStorage.setItem('user', JSON.stringify(response.data));
 
+      setEditable(false);
       Alert.alert('Profile Updated', response.data.message);
-      navigation.navigate('MainApp');
+      // Navigate to LocationFormScreen for primary location
+      navigation.navigate('LocationForm', { locationType: 'primary' });
     } catch (error) {
-      if (error instanceof z.ZodError) {
-        // Handle validation errors
-        Alert.alert('Validation Error', error.errors[0].message);
+      if (error.response) {
+        console.log('Backend error:', error.response.data);
+        Alert.alert(
+          'Error',
+          error.response.data.message || 'An unexpected error occurred'
+        );
       } else {
         console.error('Unexpected error:', error);
         Alert.alert('Error', 'An unexpected error occurred');
@@ -201,9 +246,23 @@ const PersonalInfoScreen = () => {
     }
   };
 
+  console.log('PersonalInfoScreen params:', route.params);
+  console.log('userId:', userId);
+
   return (
     <SafeAreaView style={styles.wrapper}>
+      {/* Floating Edit Button */}
+
       <ScrollView contentContainerStyle={styles.container}>
+        {!editable && !fromOnboarding && (
+          <TouchableOpacity
+            style={styles.editModeButton}
+            onPress={() => setEditable(true)}
+            activeOpacity={0.8}
+          >
+            <Feather name="edit-2" size={20} color="#fff" />
+          </TouchableOpacity>
+        )}
         {/* Back Button */}
         <TouchableOpacity
           style={styles.backButton}
@@ -215,7 +274,10 @@ const PersonalInfoScreen = () => {
         {/* Profile Image with Edit Button */}
         <View style={styles.imageContainer}>
           <Image source={{ uri: profileImage }} style={styles.profileImage} />
-          <TouchableOpacity style={styles.editButton} onPress={pickImage}>
+          <TouchableOpacity
+            style={styles.profileImageEditButton}
+            onPress={pickImage}
+          >
             <Feather name="edit" size={24} color="white" />
           </TouchableOpacity>
         </View>
@@ -230,18 +292,21 @@ const PersonalInfoScreen = () => {
             style={styles.input}
             placeholder="Full Name"
             value={username}
-            editable={editable} // Incorporate the suggested code change
+            editable={editable}
             onChangeText={setUsername}
           />
-          <View style={styles.input}>
-            <Text style={{ color: 'grey' }}>
-              {userEmail || 'No email available'}
-            </Text>
-          </View>
+          <TextInput
+            style={styles.input}
+            value={userEmail}
+            editable={false}
+            selectTextOnFocus={false}
+            placeholder="Email"
+          />
           <View style={styles.gender}>
             <Picker
               selectedValue={selectedValue}
               onValueChange={(itemValue) => setSelectedValue(itemValue)}
+              enabled={editable}
               style={{ color: 'grey' }}
             >
               <Picker.Item
@@ -260,6 +325,7 @@ const PersonalInfoScreen = () => {
             placeholder="Phone number"
             value={phoneNumber}
             onChangeText={handlePhoneNumberChange}
+            editable={editable}
           />
           {phoneNumberError ? (
             <Text style={styles.errorText}>{phoneNumberError}</Text>
@@ -268,7 +334,8 @@ const PersonalInfoScreen = () => {
           <View>
             <TouchableOpacity
               style={styles.input}
-              onPress={() => setOpen(true)}
+              onPress={() => editable && setOpen(true)}
+              disabled={!editable}
             >
               <Text style={{ color: 'grey' }}>
                 {dateOfBirth || 'Select Date of Birth'}
@@ -292,6 +359,7 @@ const PersonalInfoScreen = () => {
             <Picker
               selectedValue={bloodGroup}
               onValueChange={(itemValue) => setBloodGroup(itemValue)}
+              enabled={editable}
               style={{ color: 'grey' }}
             >
               <Picker.Item
@@ -311,8 +379,9 @@ const PersonalInfoScreen = () => {
           </View>
           <View style={styles.gender}>
             <Picker
-              selectedValue={allergyType} // Use allergyType for the dropdown
+              selectedValue={allergyType}
               onValueChange={(itemValue) => setAllergyType(itemValue)}
+              enabled={editable}
               style={{ color: 'grey' }}
             >
               <Picker.Item
@@ -331,17 +400,20 @@ const PersonalInfoScreen = () => {
             placeholder="Specify allergen (e.g., Peanuts, Penicillin)"
             value={allergies}
             onChangeText={setAllergies}
+            editable={editable}
           />
           <TextInput
             style={styles.input}
             placeholder="Medication"
             value={medication}
             onChangeText={setMedication}
+            editable={editable}
           />
           <View style={styles.gender}>
             <Picker
-              selectedValue={HMO} // Use the existing HMO state
+              selectedValue={HMO}
               onValueChange={(itemValue) => setHMO(itemValue)}
+              enabled={editable}
               style={{ color: 'grey' }}
             >
               <Picker.Item label="Select your HMO" value="" enabled={false} />
@@ -361,12 +433,14 @@ const PersonalInfoScreen = () => {
             placeholder="Enter your HMO Member ID"
             value={memberID}
             onChangeText={setMemberID}
+            editable={editable}
           />
           <TextInput
             style={styles.input}
             placeholder="Emergency Contact"
             value={emergencyContact}
             onChangeText={handleEmergencyContactChange}
+            editable={editable}
           />
           {emergencyContactError ? (
             <Text style={styles.errorText}>{emergencyContactError}</Text>
@@ -375,6 +449,7 @@ const PersonalInfoScreen = () => {
             <Picker
               selectedValue={emergencyContactRelation}
               onValueChange={setEmergencyContactRelation}
+              enabled={editable}
               style={{ color: 'grey' }}
             >
               <Picker.Item
@@ -393,28 +468,20 @@ const PersonalInfoScreen = () => {
           </View>
         </View>
 
-        {/* Edit Button - Shown only when not editable */}
-        {!editable && (
+        {/* Submit Button */}
+        {editable && (
           <TouchableOpacity
-            style={styles.editButton}
-            onPress={() => setEditable(true)}
+            style={styles.submitButton}
+            onPress={handleProfileUpdate}
+            disabled={loading}
           >
-            <Text style={styles.editButtonText}>Edit</Text>
+            {loading ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.submitText}>Submit</Text>
+            )}
           </TouchableOpacity>
         )}
-
-        {/* Submit Button */}
-        <TouchableOpacity
-          style={styles.submitButton}
-          onPress={handleProfileUpdate}
-          disabled={loading} // Disable button when loading
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="#fff" /> // Show loading spinner
-          ) : (
-            <Text style={styles.submitText}>Submit</Text>
-          )}
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -445,7 +512,7 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
   },
-  editButton: {
+  profileImageEditButton: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -456,6 +523,16 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: 'white',
     fontSize: 16,
+  },
+  editModeButton: {
+    position: 'absolute',
+    top: 16,
+    right: 16,
+    backgroundColor: 'forestgreen',
+    borderRadius: 24,
+    padding: 10,
+    elevation: 4,
+    zIndex: 10,
   },
   title: {
     fontSize: 20,
@@ -507,6 +584,15 @@ const styles = StyleSheet.create({
   submitText: {
     fontSize: 16,
     color: '#fff',
+  },
+  editButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    backgroundColor: '#0B9444',
+    borderRadius: 50,
+    padding: 10,
+    elevation: 5,
   },
 });
 

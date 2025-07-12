@@ -30,7 +30,6 @@ function MainScreen({ navigation }) {
     wrapper,
     baseText,
     headerText,
-    bodyText,
     container,
     headerContainer,
     carouselContainer,
@@ -42,17 +41,26 @@ function MainScreen({ navigation }) {
   const [showSetupPrompt, setShowSetupPrompt] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [showAll] = useState(false);
+  const [userId, setUserId] = useState(null);
+  const [locations, setLocations] = useState([]);
 
   // Fetch username from AsyncStorage
   useEffect(() => {
     const getUser = async () => {
       try {
-        const username = await AsyncStorage.getItem('username');
-        if (username !== null) {
-          setUserName(username);
+        const userDataString = await AsyncStorage.getItem('user');
+        if (userDataString) {
+          const userData = JSON.parse(userDataString);
+          if (userData.user && userData.user.username) {
+            setUserName(userData.user.username);
+          }
+          setUserId(userData?.user?._id || null);
+          setLocations(userData?.user?.locations || []);
+          console.log('User ID:', userData?.user?._id);
+          console.log('Locations:', userData?.user?.locations || []);
         }
       } catch (error) {
-        console.error('Error retrieving username:', error);
+        console.error('Error retrieving user data:', error);
       }
     };
     getUser();
@@ -108,6 +116,15 @@ function MainScreen({ navigation }) {
     }
   };
 
+  function getGreeting() {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  }
+
+  const firstName = username ? username.split(' ')[0] : '';
+
   return (
     <SafeAreaView style={wrapper}>
       <Modal visible={showSetupPrompt} transparent animationType="slide">
@@ -145,8 +162,8 @@ function MainScreen({ navigation }) {
         </View>
 
         <View style={headerContainer}>
-          <Text style={[baseText, bodyText]}>
-            Good Morning {username ? username.split(' ')[0] : ''}
+          <Text style={styles.greetingText}>
+            {getGreeting()}{firstName ? `, ${firstName}` : ''}
           </Text>
         </View>
 
@@ -309,6 +326,11 @@ const styles = StyleSheet.create({
   helpContainer: {
     marginTop: 10.35,
     alignSelf: 'flex-end',
+  },
+  greetingText: {
+    color: '#332E0E',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
 MainScreen.propTypes = {

@@ -21,7 +21,11 @@ const SignInOptionsScreen = () => {
     try {
       await AsyncStorage.setItem('selectedRelation', selectedRelation);
       if (selectedRelation === 'PSC') {
-        navigation.navigate('PersonalInfo', { relation: selectedRelation });
+        navigation.navigate('PersonalInfo', {
+          relation: selectedRelation,
+          editable: true,
+          fromOnboarding: true,
+        });
       } else if (selectedRelation) {
         navigation.navigate('RelationInfo', { relation: selectedRelation });
       }
