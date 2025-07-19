@@ -44,26 +44,33 @@ function MainScreen({ navigation }) {
   const [userId, setUserId] = useState(null);
   const [locations, setLocations] = useState([]);
 
-  // Fetch username from AsyncStorage
+  // Fetch username and locations from AsyncStorage
   useEffect(() => {
-    const getUser = async () => {
+    const getUserAndLocations = async () => {
       try {
+        // Get user info
         const userDataString = await AsyncStorage.getItem('user');
         if (userDataString) {
-          const userData = JSON.parse(userDataString);
-          if (userData.profile && userData.profile.username) {
-            setUserName(userData.profile.username);
-          }
-          setUserId(userData?.profile?._id || null);
-          setLocations(userData?.user?.locations || []);
-          console.log('User ID:', userData?.profile?._id);
-          console.log('Locations:', userData?.user?.locations || []);
+          const user = JSON.parse(userDataString);
+          setUserName(user.username || '');
+          setUserId(user._id || null);
+        }
+        // Get locations from hospitalInfo
+        const hospitalInfoString = await AsyncStorage.getItem('hospitalInfo');
+        if (hospitalInfoString) {
+          const hospitalInfo = JSON.parse(hospitalInfoString);
+          setLocations(hospitalInfo.locations || []);
+        } else {
+          setLocations([]);
         }
       } catch (error) {
-        console.error('Error retrieving user data:', error);
+        console.error('Error retrieving user or location data:', error);
+        setUserName('');
+        setUserId(null);
+        setLocations([]);
       }
     };
-    getUser();
+    getUserAndLocations();
   }, []);
 
   // Check if user has set up an SOS location

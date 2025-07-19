@@ -82,30 +82,27 @@ const PersonalInfoScreen = () => {
         const userDataString = await AsyncStorage.getItem('user');
         console.log('Fetched userDataString:', userDataString);
         if (userDataString) {
-          const userData = JSON.parse(userDataString);
-          console.log('Parsed userData:', userData);
-          // Use profile for user info
-          const profile = userData.profile || {};
-          console.log('Profile:', profile);
-          userId = profile._id;
+          const user = JSON.parse(userDataString);
+          console.log('Parsed user:', user);
+          userId = user._id;
           setUserId(userId);
           console.log('userId after parsing:', userId);
 
-          setUsername(profile.username || '');
-          setEmail(profile.email || '');
-          setSelectedValue(profile.gender || '');
-          setRelation(profile.relation || '');
-          setProfileImage(profile.profileImage || null);
-          setPhoneNumber(profile.phoneNumber || '');
-          setDateOfBirth(profile.dateOfBirth || '');
-          setBloodGroup(profile.bloodGroup || '');
-          setAllergies(profile.allergies || '');
-          setMedication(profile.medication || '');
-          setHMO(profile.HMO || '');
-          setMemberID(profile.memberID || '');
-          setEmergencyContact(profile.emergencyContact || '');
-          setAllergyType(profile.allergyType || '');
-          setEmergencyContactRelation(profile.emergencyContactRelation || '');
+          setUsername(user.username || '');
+          setEmail(user.email || '');
+          setSelectedValue(user.gender || '');
+          setRelation(user.relation || '');
+          setProfileImage(user.profileImage || null);
+          setPhoneNumber(user.phoneNumber || '');
+          setDateOfBirth(user.dateOfBirth || '');
+          setBloodGroup(user.bloodGroup || '');
+          setAllergies(user.allergies || '');
+          setMedication(user.medication || '');
+          setHMO(user.HMO || '');
+          setMemberID(user.memberID || '');
+          setEmergencyContact(user.emergencyContact || '');
+          setAllergyType(user.allergyType || '');
+          setEmergencyContactRelation(user.emergencyContactRelation || '');
         }
       }
 
@@ -173,6 +170,7 @@ const PersonalInfoScreen = () => {
         userIdToUse = userData?.profile?._id;
       }
       console.log('userId:', userIdToUse);
+  
 
       const idToUse = userIdToUse;
       if (!idToUse) {
@@ -221,6 +219,7 @@ const PersonalInfoScreen = () => {
         data.profileImage = profileImage;
       }
 
+      console.log('Updating profile at:', `${API_URL}/users/${idToUse}/profile`);
       console.log('Payload:', data);
 
       setLoading(true);
@@ -228,12 +227,16 @@ const PersonalInfoScreen = () => {
         `${API_URL}/users/${idToUse}/profile`,
         data
       );
-      const updatedUsername = response.data.profile.username;
+
+      console.log('Response:', response);
+      // Assume backend returns updated user object as response.data.user
+      const updatedUser = response.data.user || response.data;
+      const updatedUsername = updatedUser.username;
 
       // Update username state and save to AsyncStorage
       setUsername(updatedUsername);
       await AsyncStorage.setItem('username', updatedUsername);
-      await AsyncStorage.setItem('user', JSON.stringify(response.data));
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
 
       setEditable(false);
       Alert.alert('Profile Updated', response.data.message);
@@ -242,14 +245,18 @@ const PersonalInfoScreen = () => {
     } catch (error) {
       if (error.response) {
         console.log('Backend error:', error.response.data);
-        Alert.alert(
-          'Error',
-          error.response.data.message || 'An unexpected error occurred'
-        );
+        console.log('Status:', error.response.status);
+        console.log('Headers:', error.response.headers);
+      } else if (error.request) {
+        console.log('No response received:', error.request);
       } else {
-        console.error('Unexpected error:', error);
-        Alert.alert('Error', 'An unexpected error occurred');
+        console.log('Error setting up request:', error.message);
       }
+      console.log('Error config:', error.config);
+      Alert.alert(
+          'Error',
+          error.response.data.message || JSON.stringify(error.response.data) || 'An unexpected error occurred'
+        );
     } finally {
       setLoading(false);
     }

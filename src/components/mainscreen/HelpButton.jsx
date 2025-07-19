@@ -58,57 +58,49 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// Remove the hardcoded SAVED_LOCATIONS
-// const SAVED_LOCATIONS = [
-//   {
-//     id: '1',
-//     type: 'Primary',
-//     title: 'Home',
-//     address: 'Flat 2B, Victoria Island, Lagos',
-//     landmark: 'Near City Mall',
-//     icon: 'home'
-//   },
-//   {
-//     id: '2',
-//     type: 'Secondary',
-//     title: 'Office',
-//     address: '15 Admiralty Way, Lekki Phase 1, Lagos',
-//     landmark: 'Opposite Shoprite',
-//     icon: 'briefcase'
-//   },
-//   {
-//     id: '3',
-//     type: 'Other',
-//     title: 'School',
-//     address: 'University of Lagos, Akoka, Lagos',
-//     landmark: 'Main Campus',
-//     icon: 'school'
-//   }
-// ];
+import axios from 'axios';
+import API_URL from '../../config/api';
 
 function SOSButton({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [pulseAnim] = useState(new Animated.Value(1));
   const [savedLocations, setSavedLocations] = useState([]);
 
-  // Fetch locations from AsyncStorage on mount
-  React.useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const userDataString = await AsyncStorage.getItem('user');
-        if (userDataString) {
-          const userData = JSON.parse(userDataString);
-          // Locations are under userData.user.locations
-          const locations = userData?.user?.locations || [];
-          setSavedLocations(locations);
+  // Fetch locations from backend and AsyncStorage every time the modal is opened
+  const fetchLocations = async () => {
+    try {
+      // Get userId from AsyncStorage
+      const userId = await AsyncStorage.getItem('userId')
+      if (userId) {
+        // Fetch from backend
+        const response = await axios.get(`${API_URL}/get-hospital/${userId}`);
+        console.log('Response:', response);
+        if (response.data.message === 'Hospital locations fetched successfully') {
+          await AsyncStorage.setItem('hospitalInfo', JSON.stringify(response.data));
+          console.log('Fetched hospital info from backend:', response.data);
+          setSavedLocations(response.data[0].locations || []);
+          return;
         }
-      } catch (e) {
+      }
+      // Fallback: fetch from AsyncStorage
+      const hospitalInfoString = await AsyncStorage.getItem('hospitalInfo');
+      if (hospitalInfoString) {
+        const hospitalInfo = JSON.parse(hospitalInfoString);
+        setSavedLocations(hospitalInfo.locations || []);
+      } else {
         setSavedLocations([]);
       }
-    };
-    fetchLocations();
-  }, []);
+    } catch (e) {
+      setSavedLocations([]);
+      console.error('Error fetching hospital info:', e);
+    }
+  };
+
+  React.useEffect(() => {
+    if (modalVisible) {
+      fetchLocations();
+    }
+  }, [modalVisible]);
 
   // Pulse animation for "Find One Near Me" button
   React.useEffect(() => {

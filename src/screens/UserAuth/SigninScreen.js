@@ -97,8 +97,10 @@ const SignInScreen = () => {
       // Log the raw response data
       console.log('Login response:', response.data);
 
-      // Save the entire response (including user object) to AsyncStorage
-      await AsyncStorage.setItem('user', JSON.stringify(response.data));
+      // Save user and token to AsyncStorage as per backend structure
+      await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
+      await AsyncStorage.setItem('userId', response.data.user._id);
+      await AsyncStorage.setItem('token', response.data.token);
 
       // Fetch it back and log to confirm
       const storedUser = await AsyncStorage.getItem('user');

@@ -54,9 +54,13 @@ const SignUpScreen = () => {
       const response = await axios.post(`${API_URL}/signup`, data);
       const userId = response.data.userId;
       console.log('User id is ' + userId);
-      await AsyncStorage.setItem('user', JSON.stringify(response.data));
-      await AsyncStorage.setItem('userId', response.data.userId);
+      // Store only userId and email, not the whole response
+      await AsyncStorage.setItem('userId', userId);
       await AsyncStorage.setItem('userEmail', email);
+      // If backend returns a user object, store it as 'user' (for consistency with sign-in)
+      if (response.data.user) {
+        await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
+      }
       console.log('signup successful');
       Alert.alert('Success', response.data.message);
       navigation.navigate('SignInOptions');

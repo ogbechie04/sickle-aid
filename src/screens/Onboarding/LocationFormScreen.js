@@ -12,6 +12,8 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios'; // Added axios import
+import  API_URL  from '../../config/api'; // Added API_URL import
 
 const LOCATION_TITLES = [
   { label: 'Home', value: 'home', icon: 'home-outline' },
@@ -60,87 +62,58 @@ const LocationFormScreen = ({ navigation, route }) => {
 
     console.log('Location payload to backend:', payload);
 
-    // --- TEMPORARY LOCAL STORAGE ---
     try {
-      // Get existing locations or start with empty array
-      const existing = await AsyncStorage.getItem('locations');
-      let locations = existing ? JSON.parse(existing) : [];
-
-      // Replace if updating, or add new
-      const idx = locations.findIndex(
-        (loc) => loc.locationType === locationType
-      );
-      if (idx > -1) {
-        locations[idx] = payload;
-      } else {
-        locations.push(payload);
+      // Get userId from AsyncStorage
+      const userDataString = await AsyncStorage.getItem('user');
+      // const user = userDataString ? JSON.parse(userDataString) : {};
+      const userId = await AsyncStorage.getItem('userId');
+      // console.log('userDataString:', userDataString);
+      // console.log('user:', user);
+      console.log('User ID:', userId);
+      if (!userId) {
+        Alert.alert('Error', 'User ID not found. Please log in again.');
+        navigation.navigate('SignIn');
+        return;
       }
 
-      await AsyncStorage.setItem('locations', JSON.stringify(locations));
-      console.log('Saved locations locally:', locations);
+      // Send location to backend
+      const response = await axios.post(`${API_URL}/save-hospital`, {
+        userId,
+        locations: [payload],
+      });
+      console.log('Response:', response);
+      if (response.data.message === 'Hospital information saved successfully') {
+        // Store hospitalInfo in AsyncStorage
+        await AsyncStorage.setItem('hospitalInfo', JSON.stringify(response.data.hospitalInfo));
+        Alert.alert('Success', `${locationType} location saved successfully!`, [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Reset form fields
+              setTitle('');
+              setLandmark('');
+              setFlatNumber('');
+              setAddress('');
+              setLocalGovernment('');
+              setCustomName('');
+              setHospitalName('');
+              setHospitalAddress('');
+              setPatientId('');
+              if (locationType === 'primary') {
+                navigation.navigate('LocationForm', { locationType: 'secondary' });
+              } else {
+                navigation.navigate('MainApp');
+              }
+            },
+          },
+        ]);
+      } else {
+        Alert.alert('Error', response.data.message || 'Failed to save location.');
+      }
     } catch (e) {
-      console.error('Failed to save location locally:', e);
+      console.error('Failed to save location:', e);
+      Alert.alert('Error', 'Failed to save location. Please try again.');
     }
-    // --- END TEMPORARY LOCAL STORAGE ---
-
-    Alert.alert('Success', `${locationType} location saved successfully!`, [
-      {
-        text: 'OK',
-        onPress: async () => {
-          // Reset form fields
-          setTitle('');
-          setLandmark('');
-          setFlatNumber('');
-          setAddress('');
-          setLocalGovernment('');
-          setCustomName('');
-          setHospitalName('');
-          setHospitalAddress('');
-          setPatientId('');
-          if (locationType === 'primary') {
-            navigation.navigate('LocationForm', { locationType: 'secondary' });
-          } else {
-            // Attach locations to user object in AsyncStorage
-            try {
-              // Get user object
-              const userDataString = await AsyncStorage.getItem('user');
-              const userData = userDataString ? JSON.parse(userDataString) : {};
-
-              // Get locations array
-              const locationsString = await AsyncStorage.getItem('locations');
-              const locations = locationsString
-                ? JSON.parse(locationsString)
-                : [];
-
-              // Attach locations to user object
-              const updatedUserData = {
-                ...userData,
-                user: {
-                  ...(userData.user || {}),
-                  locations: locations,
-                },
-              };
-
-              // Save back to AsyncStorage
-              await AsyncStorage.setItem(
-                'user',
-                JSON.stringify(updatedUserData)
-              );
-              console.log(
-                'User object after attaching locations:',
-                updatedUserData
-              );
-
-              // Now navigate to MainApp
-              navigation.navigate('MainApp');
-            } catch (e) {
-              console.error('Failed to attach locations to user object:', e);
-              navigation.navigate('MainApp'); // Still navigate to main app
-            }
-          }
-        },
-      },
-    ]);
   };
 
   return (
