@@ -80,28 +80,32 @@ const PersonalInfoScreen = () => {
       } else {
         // Returning user: get user object from AsyncStorage
         const userDataString = await AsyncStorage.getItem('user');
-        console.log('userDataString:', userDataString);
+        console.log('Fetched userDataString:', userDataString);
         if (userDataString) {
           const userData = JSON.parse(userDataString);
-          user = userData.user;
-          userId = user?._id;
+          console.log('Parsed userData:', userData);
+          // Use profile for user info
+          const profile = userData.profile || {};
+          console.log('Profile:', profile);
+          userId = profile._id;
           setUserId(userId);
+          console.log('userId after parsing:', userId);
 
-          setUsername(user.username || '');
-          setEmail(user.email || '');
-          setSelectedValue(user.gender || '');
-          setRelation(user.relation || '');
-          setProfileImage(user.profileImage || null);
-          setPhoneNumber(user.phoneNumber || '');
-          setDateOfBirth(user.dateOfBirth || '');
-          setBloodGroup(user.bloodGroup || '');
-          setAllergies(user.allergies || '');
-          setMedication(user.medication || '');
-          setHMO(user.HMO || '');
-          setMemberID(user.memberID || '');
-          setEmergencyContact(user.emergencyContact || '');
-          setAllergyType(user.allergyType || '');
-          setEmergencyContactRelation(user.emergencyContactRelation || '');
+          setUsername(profile.username || '');
+          setEmail(profile.email || '');
+          setSelectedValue(profile.gender || '');
+          setRelation(profile.relation || '');
+          setProfileImage(profile.profileImage || null);
+          setPhoneNumber(profile.phoneNumber || '');
+          setDateOfBirth(profile.dateOfBirth || '');
+          setBloodGroup(profile.bloodGroup || '');
+          setAllergies(profile.allergies || '');
+          setMedication(profile.medication || '');
+          setHMO(profile.HMO || '');
+          setMemberID(profile.memberID || '');
+          setEmergencyContact(profile.emergencyContact || '');
+          setAllergyType(profile.allergyType || '');
+          setEmergencyContactRelation(profile.emergencyContactRelation || '');
         }
       }
 
@@ -162,10 +166,15 @@ const PersonalInfoScreen = () => {
     try {
       const userDataString = await AsyncStorage.getItem('user');
       const userData = JSON.parse(userDataString);
-      const userId = userData?.userId; // Use this instead of userData?.user?._id
-      console.log('userId:', userId);
+      let userIdToUse = userId; // userId from state
+      if (!userIdToUse) {
+        const userDataString = await AsyncStorage.getItem('user');
+        const userData = JSON.parse(userDataString);
+        userIdToUse = userData?.profile?._id;
+      }
+      console.log('userId:', userIdToUse);
 
-      const idToUse = userId;
+      const idToUse = userIdToUse;
       if (!idToUse) {
         Alert.alert('Error', 'User ID not found. Please log in again.');
         return;
@@ -186,7 +195,7 @@ const PersonalInfoScreen = () => {
       }
 
       const data = {
-        userId,
+        userId: idToUse,
         email: userEmail,
         username,
         gender: selectedValue,
@@ -216,7 +225,7 @@ const PersonalInfoScreen = () => {
 
       setLoading(true);
       const response = await axios.put(
-        `${API_URL}/users/${userId}/profile`,
+        `${API_URL}/users/${idToUse}/profile`,
         data
       );
       const updatedUsername = response.data.profile.username;

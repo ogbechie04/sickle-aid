@@ -51,12 +51,12 @@ function MainScreen({ navigation }) {
         const userDataString = await AsyncStorage.getItem('user');
         if (userDataString) {
           const userData = JSON.parse(userDataString);
-          if (userData.user && userData.user.username) {
-            setUserName(userData.user.username);
+          if (userData.profile && userData.profile.username) {
+            setUserName(userData.profile.username);
           }
-          setUserId(userData?.user?._id || null);
+          setUserId(userData?.profile?._id || null);
           setLocations(userData?.user?.locations || []);
-          console.log('User ID:', userData?.user?._id);
+          console.log('User ID:', userData?.profile?._id);
           console.log('Locations:', userData?.user?.locations || []);
         }
       } catch (error) {
