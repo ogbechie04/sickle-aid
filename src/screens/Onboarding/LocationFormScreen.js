@@ -27,6 +27,10 @@ const LocationFormScreen = ({ navigation, route }) => {
   const [address, setAddress] = useState('');
   const [localGovernment, setLocalGovernment] = useState('');
   const [customName, setCustomName] = useState('');
+  // Add hospital info state
+  const [hospitalName, setHospitalName] = useState('');
+  const [hospitalAddress, setHospitalAddress] = useState('');
+  const [patientId, setPatientId] = useState('');
 
   const handleSubmit = async () => {
     if (
@@ -49,6 +53,9 @@ const LocationFormScreen = ({ navigation, route }) => {
       address,
       localGovernment,
       state: 'Lagos',
+      hospitalName, // optional
+      hospitalAddress, // optional
+      patientId, // optional
     };
 
     console.log('Location payload to backend:', payload);
@@ -80,6 +87,16 @@ const LocationFormScreen = ({ navigation, route }) => {
       {
         text: 'OK',
         onPress: async () => {
+          // Reset form fields
+          setTitle('');
+          setLandmark('');
+          setFlatNumber('');
+          setAddress('');
+          setLocalGovernment('');
+          setCustomName('');
+          setHospitalName('');
+          setHospitalAddress('');
+          setPatientId('');
           if (locationType === 'primary') {
             navigation.navigate('LocationForm', { locationType: 'secondary' });
           } else {
@@ -241,6 +258,38 @@ const LocationFormScreen = ({ navigation, route }) => {
               placeholderTextColor="#999"
               value={localGovernment}
               onChangeText={setLocalGovernment}
+            />
+          </View>
+
+          {/* Hospital Information (optional) */}
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Hospital Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. St. Mary's Hospital"
+              placeholderTextColor="#999"
+              value={hospitalName}
+              onChangeText={setHospitalName}
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Hospital Address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. 123 Main St, Lagos"
+              placeholderTextColor="#999"
+              value={hospitalAddress}
+              onChangeText={setHospitalAddress}
+            />
+          </View>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Patient ID</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="e.g. 123456"
+              placeholderTextColor="#999"
+              value={patientId}
+              onChangeText={setPatientId}
             />
           </View>
 
