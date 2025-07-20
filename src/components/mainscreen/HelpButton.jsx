@@ -69,30 +69,133 @@ function SOSButton({ navigation }) {
   // Fetch locations from backend and AsyncStorage every time the modal is opened
   const fetchLocations = async () => {
     try {
-      // Get userId from AsyncStorage
-      const userId = await AsyncStorage.getItem('userId')
-      if (userId) {
-        // Fetch from backend
-        const response = await axios.get(`${API_URL}/get-hospital/${userId}`);
-        console.log('Response:', response);
-        if (response.data.message === 'Hospital locations fetched successfully') {
-          await AsyncStorage.setItem('hospitalInfo', JSON.stringify(response.data));
-          console.log('Fetched hospital info from backend:', response.data);
-          setSavedLocations(response.data[0].locations || []);
-          return;
+      // Get userId from user object in AsyncStorage
+      const userDataString = await AsyncStorage.getItem('user');
+      const user = userDataString ? JSON.parse(userDataString) : {};
+      console.log('HelpButton - Raw user data:', user);
+
+      let userId = null;
+
+      // Try to get userId from different possible structures
+      if (user._id) {
+        userId = user._id;
+        console.log('HelpButton - User ID from user._id:', userId);
+      } else if (user.profile && user.profile._id) {
+        userId = user.profile._id;
+        console.log('HelpButton - User ID from user.profile._id:', userId);
+      } else if (user.userId) {
+        userId = user.userId;
+        console.log('HelpButton - User ID from user.userId:', userId);
+      }
+
+      // Fallback to userId from AsyncStorage if user object doesn't have _id
+      if (!userId) {
+        const userIdFromStorage = await AsyncStorage.getItem('userId');
+        if (userIdFromStorage) {
+          userId = userIdFromStorage;
+          console.log('HelpButton - User ID from userId storage:', userId);
         }
       }
-      // Fallback: fetch from AsyncStorage
+
+      console.log('HelpButton - Final User ID:', userId);
+
+      if (userId) {
+        const token = await AsyncStorage.getItem('token');
+        console.log('HelpButton - Token exists:', !!token);
+
+        const response = await axios.get(
+          `${API_URL}/get-hospital/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        console.log('HelpButton - API Response:', response.data);
+
+        if (response.data.message === 'Hospital locations fetched successfully') {
+          // The backend returns an array of hospital objects, collect all locations
+          const hospitalDataArray = response.data.data;
+          console.log('HelpButton - Hospital data array:', hospitalDataArray);
+          console.log('HelpButton - Number of hospital records:', hospitalDataArray.length);
+
+          if (hospitalDataArray && hospitalDataArray.length > 0) {
+            // Collect all locations from ALL hospital records
+            const allLocations = [];
+            hospitalDataArray.forEach((hospitalInfo, index) => {
+              console.log(`HelpButton - Hospital ${index + 1} ID:`, hospitalInfo._id);
+              console.log(`HelpButton - Hospital ${index + 1} locations:`, hospitalInfo.locations);
+              console.log(`HelpButton - Hospital ${index + 1} location count:`, hospitalInfo.locations ? hospitalInfo.locations.length : 0);
+
+              if (hospitalInfo.locations && hospitalInfo.locations.length > 0) {
+                // Add each location with its hospital record info
+                hospitalInfo.locations.forEach((location, locIndex) => {
+                  console.log(`HelpButton - Adding location ${locIndex + 1} from hospital ${index + 1}:`, location);
+                  allLocations.push({
+                    ...location,
+                    hospitalRecordId: hospitalInfo._id, // Keep track of which record it came from
+                  });
+                });
+              } else {
+                console.log(`HelpButton - Hospital ${index + 1} has no locations`);
+              }
+            });
+
+            console.log('HelpButton - Total collected locations:', allLocations.length);
+            console.log('HelpButton - All collected locations:', allLocations);
+
+            // Store the aggregated locations in AsyncStorage for easy access
+            const aggregatedHospitalInfo = {
+              _id: hospitalDataArray[0]._id, // Use first record as primary
+              userId: hospitalDataArray[0].userId,
+              locations: allLocations,
+              createdAt: hospitalDataArray[0].createdAt,
+              updatedAt: hospitalDataArray[hospitalDataArray.length - 1].updatedAt, // Use latest update time
+            };
+
+            await AsyncStorage.setItem('hospitalInfo', JSON.stringify(aggregatedHospitalInfo));
+            console.log('HelpButton - Stored aggregated hospitalInfo:', aggregatedHospitalInfo);
+            console.log('HelpButton - Setting savedLocations to:', allLocations);
+            setSavedLocations(allLocations);
+            return;
+          } else {
+            console.log('HelpButton - No hospital records found in array');
+          }
+        } else {
+          console.log('HelpButton - API response message not successful:', response.data.message);
+        }
+      }
+
+      // Fallback to AsyncStorage
       const hospitalInfoString = await AsyncStorage.getItem('hospitalInfo');
+      console.log('HelpButton - Fallback hospitalInfoString:', hospitalInfoString);
+
       if (hospitalInfoString) {
         const hospitalInfo = JSON.parse(hospitalInfoString);
+        console.log('HelpButton - Fallback hospitalInfo:', hospitalInfo);
+        console.log('HelpButton - Fallback locations:', hospitalInfo.locations);
         setSavedLocations(hospitalInfo.locations || []);
       } else {
+        console.log('HelpButton - No hospitalInfo found in AsyncStorage');
         setSavedLocations([]);
       }
-    } catch (e) {
-      setSavedLocations([]);
-      console.error('Error fetching hospital info:', e);
+    } catch (error) {
+      console.error('HelpButton - Error fetching locations:', error);
+
+      // Fallback to AsyncStorage on error
+      try {
+        const hospitalInfoString = await AsyncStorage.getItem('hospitalInfo');
+        if (hospitalInfoString) {
+          const hospitalInfo = JSON.parse(hospitalInfoString);
+          setSavedLocations(hospitalInfo.locations || []);
+        } else {
+          setSavedLocations([]);
+        }
+      } catch (fallbackError) {
+        console.error('HelpButton - Fallback error:', fallbackError);
+        setSavedLocations([]);
+      }
     }
   };
 
@@ -148,112 +251,110 @@ function SOSButton({ navigation }) {
     });
   };
 
-  const LocationSelectionModal = () => (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
-    >
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Select Emergency Location</Text>
-            <TouchableOpacity
-              onPress={() => setModalVisible(false)}
-              style={styles.closeButton}
-            >
-              <Ionicons name="close" size={24} color="#666" />
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.emergencyNotice}>
-            <Ionicons name="warning" size={20} color="#DC2626" />
-            <Text style={styles.emergencyNoticeText}>
-              Emergency services will be called to your selected location
-            </Text>
-          </View>
-
-          <ScrollView style={styles.locationsList} showsVerticalScrollIndicator={false}>
-            {savedLocations.map((location, idx) => (
-              <TouchableOpacity
-                key={idx}
-                style={styles.locationItem}
-                onPress={() => handleLocationSelect(location)}
-              >
-                <View style={styles.locationIcon}>
-                  <Ionicons
-                    name={
-                      location.title === 'home'
-                        ? 'home-outline'
-                        : location.title === 'office'
-                          ? 'briefcase-outline'
-                          : 'location-outline'
-                    }
-                    size={24}
-                    color="#8B6914"
-                  />
-                </View>
-                <View style={styles.locationDetails}>
-                  <View style={styles.locationHeader}>
-                    <Text style={styles.locationTitle}>
-                      {location.customName ? location.customName : location.title}
-                    </Text>
-                    <Text style={styles.locationType}>
-                      {location.locationType === 'primary'
-                        ? 'Primary'
-                        : location.locationType === 'secondary'
-                          ? 'Secondary'
-                          : 'Other'}
-                    </Text>
-                  </View>
-                  <Text style={styles.locationAddress}>{location.address}</Text>
-                  <Text style={styles.locationLandmark}>{location.landmark}</Text>
-                  {/* Hospital Info (optional) */}
-                  {location.hospitalName ? (
-                    <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Hospital:</Text> {location.hospitalName}</Text>
-                  ) : null}
-                  {location.hospitalAddress ? (
-                    <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Hospital Address:</Text> {location.hospitalAddress}</Text>
-                  ) : null}
-                  {location.patientId ? (
-                    <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Patient ID:</Text> {location.patientId}</Text>
-                  ) : null}
-                </View>
-                <View style={styles.selectButton}>
-                  <Ionicons name="chevron-forward" size={20} color="#8B6914" />
-                </View>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-
-          <View style={styles.findNearMeContainer}>
-            <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
-              <TouchableOpacity
-                style={styles.findNearMeButton}
-                onPress={handleFindNearMe}
-              >
-                <Ionicons name="location" size={24} color="#fff" />
-                <Text style={styles.findNearMeText}>Use Current Location</Text>
-              </TouchableOpacity>
-            </Animated.View>
-            <Text style={styles.helperText}>
-              Emergency services will locate you automatically
-            </Text>
-          </View>
-        </View>
-      </View>
-    </Modal>
-  );
-
   return (
     <>
-      <TouchableOpacity style={styles.container} onPress={handleSOSPress}>
+      <TouchableOpacity style={styles.container} onPress={() => {
+        handleSOSPress();
+      }}>
         <Ionicons name="medical" size={32} color="#009444" />
         <Text style={styles.helpText}>Tap {'\n'} Help!!</Text>
       </TouchableOpacity>
 
-      <LocationSelectionModal />
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Emergency Location</Text>
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                style={styles.closeButton}
+              >
+                <Ionicons name="close" size={24} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.emergencyNotice}>
+              <Ionicons name="warning" size={20} color="#DC2626" />
+              <Text style={styles.emergencyNoticeText}>
+                Emergency services will be called to your selected location
+              </Text>
+            </View>
+
+            <ScrollView style={styles.locationsList} showsVerticalScrollIndicator={false}>
+              {savedLocations.map((location, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={styles.locationItem}
+                  onPress={() => handleLocationSelect(location)}
+                >
+                  <View style={styles.locationIcon}>
+                    <Ionicons
+                      name={
+                        location.title === 'home'
+                          ? 'home-outline'
+                          : location.title === 'office'
+                            ? 'briefcase-outline'
+                            : 'location-outline'
+                      }
+                      size={24}
+                      color="forestgreen"
+                    />
+                  </View>
+                  <View style={styles.locationDetails}>
+                    <View style={styles.locationHeader}>
+                      <Text style={styles.locationTitle}>
+                        {location.customName ? location.customName : location.title}
+                      </Text>
+                      <Text style={styles.locationType}>
+                        {location.locationType === 'primary'
+                          ? 'Primary'
+                          : location.locationType === 'secondary'
+                            ? 'Secondary'
+                            : 'Other'}
+                      </Text>
+                    </View>
+                    <Text style={styles.locationAddress}>{location.address}</Text>
+                    <Text style={styles.locationLandmark}>{location.landmark}</Text>
+                    {/* Hospital Info (optional) */}
+                    {location.hospitalName ? (
+                      <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Hospital:</Text> {location.hospitalName}</Text>
+                    ) : null}
+                    {location.hospitalAddress ? (
+                      <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Hospital Address:</Text> {location.hospitalAddress}</Text>
+                    ) : null}
+                    {location.patientId ? (
+                      <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Patient ID:</Text> {location.patientId}</Text>
+                    ) : null}
+                  </View>
+                  <View style={styles.selectButton}>
+                    <Ionicons name="chevron-forward" size={20} color="forestgreen" />
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+
+            <View style={styles.findNearMeContainer}>
+              <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
+                <TouchableOpacity
+                  style={styles.findNearMeButton}
+                  onPress={handleFindNearMe}
+                >
+                  <Ionicons name="location" size={24} color="#fff" />
+                  <Text style={styles.findNearMeText}>Use Current Location</Text>
+                </TouchableOpacity>
+              </Animated.View>
+              <Text style={styles.helperText}>
+                Emergency services will locate you automatically
+              </Text>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 }
@@ -308,7 +409,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#8B6914',
+    color: '#000',
   },
   closeButton: {
     padding: 4,
@@ -359,7 +460,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#F8F6F0',
+    backgroundColor: '#DBFFEC',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 16,
@@ -380,8 +481,8 @@ const styles = StyleSheet.create({
   },
   locationType: {
     fontSize: 12,
-    color: '#8B6914',
-    backgroundColor: '#F8F6F0',
+    color: '#fff',
+    backgroundColor: 'forestgreen',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
@@ -402,7 +503,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F8F6F0',
+    backgroundColor: '#DBFFEC',
     justifyContent: 'center',
     alignItems: 'center',
   },

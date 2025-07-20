@@ -105,9 +105,9 @@ const SettingsScreen = () => {
           {/* User Profile Section */}
           <View style={styles.profileSection}>
             <View style={styles.profileImageContainer}>
-              {userProfile?.user?.profileImage ? (
+              {userProfile?.profileImage ? (
                 <Image
-                  source={{ uri: userProfile.user.profileImage }}
+                  source={{ uri: userProfile.profileImage }}
                   style={styles.profileImage}
                 />
               ) : (
@@ -128,7 +128,7 @@ const SettingsScreen = () => {
             <View style={styles.profileInfo}>
               <View style={styles.nameContainer}>
                 <Text style={styles.profileName}>
-                  {userProfile?.user?.username || 'User'}
+                  {userProfile?.username || 'User'}
                 </Text>
                 {userProfile?.verified && (
                   <View style={styles.verifiedBadge}>
@@ -137,7 +137,7 @@ const SettingsScreen = () => {
                 )}
               </View>
               <Text style={styles.accountType}>
-                Account type - {userProfile?.user?.relation || 'N/A'}
+                Account type - {userProfile?.relation || 'N/A'}
               </Text>
               <TouchableOpacity style={styles.inviteButton}>
                 <Text style={styles.inviteButtonText}>Invite</Text>

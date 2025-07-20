@@ -54,16 +54,51 @@ const SignUpScreen = () => {
       const response = await axios.post(`${API_URL}/signup`, data);
       const userId = response.data.userId;
       console.log('User id is ' + userId);
-      // Store only userId and email, not the whole response
-      await AsyncStorage.setItem('userId', userId);
-      await AsyncStorage.setItem('userEmail', email);
-      // If backend returns a user object, store it as 'user' (for consistency with sign-in)
-      if (response.data.user) {
-        await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
+      
+      // Auto-login after successful sign-up
+      try {
+        console.log('Attempting auto-login after sign-up...');
+        const loginResponse = await axios.post(`${API_URL}/signin`, {
+          email,
+          password,
+        });
+
+        if (loginResponse.status === 200) {
+          console.log('Auto-login successful');
+          // Save user and token to AsyncStorage as per backend structure
+          await AsyncStorage.setItem('user', JSON.stringify(loginResponse.data.user));
+          await AsyncStorage.setItem('userId', loginResponse.data.user._id);
+          await AsyncStorage.setItem('token', loginResponse.data.token);
+          
+          // Also save the original sign-up data for consistency
+          await AsyncStorage.setItem('userEmail', email);
+          
+          console.log('Auto-login - Stored user in AsyncStorage:', loginResponse.data.user);
+          console.log('Auto-login - Token saved:', !!loginResponse.data.token);
+          
+          setLoading(false);
+          Alert.alert('Success', response.data.message);
+          navigation.navigate('SignInOptions');
+        } else {
+          throw new Error('Auto-login failed');
+        }
+      } catch (loginError) {
+        console.error('Auto-login failed:', loginError);
+        // Fallback to original sign-up flow without token
+        console.log('Falling back to original sign-up flow...');
+        
+        // Store only userId and email, not the whole response
+        await AsyncStorage.setItem('userId', userId);
+        await AsyncStorage.setItem('userEmail', email);
+        // If backend returns a user object, store it as 'user' (for consistency with sign-in)
+        if (response.data.user) {
+          await AsyncStorage.setItem('user', JSON.stringify(response.data.user));
+        }
+        
+        setLoading(false);
+        Alert.alert('Success', response.data.message);
+        navigation.navigate('SignInOptions');
       }
-      console.log('signup successful');
-      Alert.alert('Success', response.data.message);
-      navigation.navigate('SignInOptions');
     } catch (error) {
       // Check for validation errors
       const validationErrors = error.response?.data?.errors;
