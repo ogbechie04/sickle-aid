@@ -315,8 +315,8 @@ function SosScreen(props) {
                     <Text style={styles.locationTitle}>
                       {location.customName || location.title}
                     </Text>
-                    <Text style={styles.locationAddress}>{location.address}</Text>
-                    <Text style={styles.locationLandmark}>{location.landmark}</Text>
+                    <Text style={styles.locationAddress}>({location.flatNumber}), {location.address}, {location.landmark}, {location.localGovernment}</Text>
+                    <Text style={styles.locationLandmark}>{location.state}</Text>
                   </View>
                 </View>
                 <View style={styles.actionButtons}>

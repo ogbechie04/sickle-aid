@@ -318,8 +318,8 @@ function SOSButton({ navigation }) {
                             : 'Other'}
                       </Text>
                     </View>
-                    <Text style={styles.locationAddress}>{location.address}</Text>
-                    <Text style={styles.locationLandmark}>{location.landmark}</Text>
+                    <Text style={styles.locationAddress}>({location.flatNumber}), {location.address}, {location.landmark}, {location.localGovernment}</Text>
+                    <Text style={styles.locationLandmark}>{location.state}</Text>
                     {/* Hospital Info (optional) */}
                     {location.hospitalName ? (
                       <Text style={styles.hospitalInfo}><Text style={{ fontWeight: 'bold' }}>Hospital:</Text> {location.hospitalName}</Text>
