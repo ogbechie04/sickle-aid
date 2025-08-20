@@ -13,7 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios'; // Added axios import
-import  API_URL  from '../../config/api'; // Added API_URL import
+import API_URL from '../../config/api'; // Added API_URL import
 
 const LOCATION_TITLES = [
   { label: 'Home', value: 'home', icon: 'home-outline' },
@@ -26,20 +26,40 @@ const LOCATION_TITLES = [
 ];
 
 const LocationFormScreen = ({ navigation, route }) => {
-  const { locationType = 'primary', isEditing = false, locationToEdit = null } = route.params || {};
+  const {
+    locationType = 'primary',
+    isEditing = false,
+    locationToEdit = null,
+  } = route.params || {};
   const [title, setTitle] = useState('');
   const [landmark, setLandmark] = useState('');
   const [flatNumber, setFlatNumber] = useState('');
   const [address, setAddress] = useState('');
   const [localGovernment, setLocalGovernment] = useState('');
   const [customName, setCustomName] = useState('');
+  const [existingLocations, setExistingLocations] = useState([]);
   // Add hospital info state
   const [hospitalName, setHospitalName] = useState('');
   const [hospitalAddress, setHospitalAddress] = useState('');
   const [patientId, setPatientId] = useState('');
 
-  // Pre-fill form if editing
+  // Fetch existing locations
+  const fetchExistingLocations = async () => {
+    try {
+      const hospitalInfoString = await AsyncStorage.getItem('hospitalInfo');
+      if (hospitalInfoString) {
+        const hospitalInfo = JSON.parse(hospitalInfoString);
+        setExistingLocations(hospitalInfo.locations || []);
+      }
+    } catch (error) {
+      console.error('Error fetching existing locations:', error);
+    }
+  };
+
+  // Pre-fill form if editing and fetch existing locations
   useEffect(() => {
+    fetchExistingLocations();
+    
     if (isEditing && locationToEdit) {
       setTitle(locationToEdit.title || '');
       setLandmark(locationToEdit.landmark || '');
@@ -65,14 +85,54 @@ const LocationFormScreen = ({ navigation, route }) => {
       return;
     }
 
+    // Check for duplicate location type
+    const isDuplicateType = existingLocations.some(loc => {
+      // Skip the current location if we're editing
+      if (isEditing && locationToEdit?._id === loc._id) {
+        return false;
+      }
+      // Check if the title matches
+      return loc.title === title;
+    });
+
+    if (isDuplicateType) {
+      Alert.alert(
+        'Location Type Exists',
+        `You already have a ${title} location. Please choose a different type.`
+      );
+      return;
+    }
+
+    // For custom locations, check for duplicate names
+    if (title === 'custom' && customName) {
+      const isDuplicateName = existingLocations.some(loc => {
+        // Skip the current location if we're editing
+        if (isEditing && locationToEdit?._id === loc._id) {
+          return false;
+        }
+        // Check if the custom name matches
+        return loc.customName?.toLowerCase() === customName.toLowerCase();
+      });
+
+      if (isDuplicateName) {
+        Alert.alert(
+          'Duplicate Location Name',
+          'A location with this name already exists. Please choose a different name.'
+        );
+        return;
+      }
+    }
+
     // Check if user already has 3 locations (only for new locations, not editing)
     if (!isEditing) {
       try {
         const hospitalInfoString = await AsyncStorage.getItem('hospitalInfo');
         if (hospitalInfoString) {
           const hospitalInfo = JSON.parse(hospitalInfoString);
-          const currentLocationCount = hospitalInfo.locations ? hospitalInfo.locations.length : 0;
-          
+          const currentLocationCount = hospitalInfo.locations
+            ? hospitalInfo.locations.length
+            : 0;
+
           if (currentLocationCount >= 3) {
             Alert.alert(
               'Location Limit Reached',
@@ -107,27 +167,27 @@ const LocationFormScreen = ({ navigation, route }) => {
       // Get userId from AsyncStorage - try multiple sources
       const userDataString = await AsyncStorage.getItem('user');
       const userIdFromStorage = await AsyncStorage.getItem('userId');
-      
+
       console.log('Raw userDataString:', userDataString);
       console.log('Raw userIdFromStorage:', userIdFromStorage);
-      
+
       let userId = null;
-      
+
       if (userDataString) {
         const user = JSON.parse(userDataString);
         console.log('Parsed user object:', user);
         userId = user._id;
         console.log('User ID from user object:', userId);
       }
-      
+
       // Fallback to userId from AsyncStorage if user object doesn't have _id
       if (!userId && userIdFromStorage) {
         userId = userIdFromStorage;
         console.log('User ID from userId storage:', userId);
       }
-      
+
       console.log('Final User ID:', userId);
-      
+
       if (!userId) {
         console.error('No user ID found in any storage location');
         Alert.alert('Error', 'User ID not found. Please sign in again.');
@@ -135,21 +195,24 @@ const LocationFormScreen = ({ navigation, route }) => {
       }
 
       let response;
-      
+
       if (isEditing && locationToEdit) {
         // Update existing location
         const updatePayload = {
           userId,
           locationId: locationToEdit._id,
-          updatedLocation: payload
+          updatedLocation: payload,
         };
-        
+
         response = await axios.put(`${API_URL}/update-hospital`, updatePayload);
         console.log('Update response:', response);
-        
+
         if (response.status === 200 || response.status === 201) {
           // Update local storage with the updated hospital info
-          await AsyncStorage.setItem('hospitalInfo', JSON.stringify(response.data.hospitalInfo));
+          await AsyncStorage.setItem(
+            'hospitalInfo',
+            JSON.stringify(response.data.hospitalInfo)
+          );
           Alert.alert('Success', 'Location updated successfully!', [
             {
               text: 'OK',
@@ -159,7 +222,10 @@ const LocationFormScreen = ({ navigation, route }) => {
             },
           ]);
         } else {
-          Alert.alert('Error', response.data.message || 'Failed to update location.');
+          Alert.alert(
+            'Error',
+            response.data.message || 'Failed to update location.'
+          );
         }
       } else {
         // Create new location
@@ -168,44 +234,56 @@ const LocationFormScreen = ({ navigation, route }) => {
           locations: [payload],
         });
         console.log('Response:', response);
-        
+
         if (response.status === 200 || response.status === 201) {
           // Store hospitalInfo in AsyncStorage
-          await AsyncStorage.setItem('hospitalInfo', JSON.stringify(response.data.hospitalInfo));
+          await AsyncStorage.setItem(
+            'hospitalInfo',
+            JSON.stringify(response.data.hospitalInfo)
+          );
           console.log('Stored hospitalInfo:', response.data.hospitalInfo);
-          Alert.alert('Success', `${locationType} location saved successfully!`, [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Reset form fields
-                setTitle('');
-                setLandmark('');
-                setFlatNumber('');
-                setAddress('');
-                setLocalGovernment('');
-                setCustomName('');
-                setHospitalName('');
-                setHospitalAddress('');
-                setPatientId('');
-                
-                // Navigate based on location type
-                if (locationType === 'primary') {
-                  navigation.navigate('LocationForm', { locationType: 'secondary' });
-                } else if (locationType === 'secondary') {
-                  // After secondary location, go to main app (tertiary will be added later via Manage Locations)
-                  navigation.navigate('MainApp');
-                } else if (locationType === 'tertiary') {
-                  // Tertiary location (from Manage Locations), go back
-                  navigation.goBack();
-                } else {
-                  // For custom locations (from Manage Locations), go back
-                  navigation.goBack();
-                }
+          Alert.alert(
+            'Success',
+            `${locationType} location saved successfully!`,
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  // Reset form fields
+                  setTitle('');
+                  setLandmark('');
+                  setFlatNumber('');
+                  setAddress('');
+                  setLocalGovernment('');
+                  setCustomName('');
+                  setHospitalName('');
+                  setHospitalAddress('');
+                  setPatientId('');
+
+                  // Navigate based on location type
+                  if (locationType === 'primary') {
+                    navigation.navigate('LocationForm', {
+                      locationType: 'secondary',
+                    });
+                  } else if (locationType === 'secondary') {
+                    // After secondary location, go to main app (tertiary will be added later via Manage Locations)
+                    navigation.navigate('MainApp');
+                  } else if (locationType === 'tertiary') {
+                    // Tertiary location (from Manage Locations), go back
+                    navigation.goBack();
+                  } else {
+                    // For custom locations (from Manage Locations), go back
+                    navigation.goBack();
+                  }
+                },
               },
-            },
-          ]);
+            ]
+          );
         } else {
-          Alert.alert('Error', response.data.message || 'Failed to save location.');
+          Alert.alert(
+            'Error',
+            response.data.message || 'Failed to save location.'
+          );
         }
       }
     } catch (error) {
@@ -216,29 +294,28 @@ const LocationFormScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.wrapper}>
-      <View style={styles.header}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={24} color="#000" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.helpButton}>
-          <Ionicons name="help-circle-outline" size={24} color="#000" />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Ionicons name="chevron-back" size={24} color="#000" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.helpButton}>
+            <Ionicons name="help-circle-outline" size={24} color="#000" />
+          </TouchableOpacity>
+        </View>
+
         <View style={styles.titleSection}>
           <Text style={styles.mainTitle}>
-            {isEditing 
+            {isEditing
               ? 'Edit Location'
               : locationType === 'primary'
                 ? 'Primary Location'
                 : locationType === 'secondary'
                   ? 'Secondary Location'
-                  : 'Tertiary Location'
-            }
+                  : 'Tertiary Location'}
           </Text>
           <Text style={styles.subtitle}>
             {isEditing
@@ -247,44 +324,57 @@ const LocationFormScreen = ({ navigation, route }) => {
                 ? 'Where do you spend most of your day?'
                 : locationType === 'secondary'
                   ? 'Add another important location'
-                  : 'Add your third important location'
-            }
+                  : 'Add your third important location'}
           </Text>
         </View>
 
         <View style={styles.formSection}>
           <Text style={styles.label}>Title</Text>
-          <ScrollView 
-            horizontal 
+          <ScrollView
+            horizontal
             showsHorizontalScrollIndicator={false}
             style={styles.titleOptionsContainer}
             contentContainerStyle={styles.titleOptionsContent}
           >
-            {LOCATION_TITLES.map((option) => (
+            {LOCATION_TITLES.map((option) => {
+            const isUsed = existingLocations.some(loc => {
+              // Skip the current location if we're editing
+              if (isEditing && locationToEdit?._id === loc._id) {
+                return false;
+              }
+              // Check if the title matches
+              return loc.title === option.value;
+            });
+            
+            return (
               <TouchableOpacity
                 key={option.value}
                 style={[
                   styles.titleOption,
                   title === option.value && styles.selectedTitleOption,
+                  isUsed && styles.usedOption
                 ]}
-                onPress={() => setTitle(option.value)}
+                onPress={() => !isUsed && setTitle(option.value)}
+                disabled={isUsed}
               >
                 <Ionicons
                   name={option.icon}
                   size={16}
-                  color={title === option.value ? '#fff' : 'forestgreen'}
+                  color={title === option.value ? '#fff' : isUsed ? '#ccc' : 'forestgreen'}
                   style={styles.titleIcon}
                 />
                 <Text
                   style={[
                     styles.titleOptionText,
                     title === option.value && styles.selectedTitleOptionText,
+                    isUsed && styles.usedOptionText
                   ]}
                 >
                   {option.label}
                 </Text>
               </TouchableOpacity>
-            ))}
+            );
+          })}
           </ScrollView>
 
           {/* Move the custom name input here */}
@@ -395,11 +485,23 @@ const LocationFormScreen = ({ navigation, route }) => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitText}>
-            {isEditing ? 'Update Location' : 'Save Location'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+            <Text style={styles.submitText}>
+              {isEditing ? 'Update Location' : 'Save Location'}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Show skip button only during onboarding (not editing) and for secondary location */}
+          {!isEditing && locationType === 'secondary' && (
+            <TouchableOpacity 
+              style={styles.skipButton}
+              onPress={() => navigation.navigate('MainApp')}
+            >
+              <Text style={styles.skipText}>Skip for now</Text>
+            </TouchableOpacity>
+          )}
+        </View>
 
         <View style={styles.bottomSpacing} />
       </ScrollView>
@@ -438,7 +540,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
   },
   mainTitle: {
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: '700',
     color: 'black',
     marginBottom: 8,
@@ -533,10 +635,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'forestgreen',
   },
+  usedOption: {
+    borderColor: '#ccc',
+    backgroundColor: '#f5f5f5',
+  },
+  usedOptionText: {
+    color: '#999',
+  },
+  buttonContainer: {
+    paddingHorizontal: 24,
+    marginTop: 32,
+  },
   submitButton: {
     backgroundColor: 'forestgreen',
-    marginHorizontal: 24,
-    marginTop: 32,
     paddingVertical: 16,
     borderRadius: 25,
     alignItems: 'center',
@@ -548,6 +659,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
+  },
+  skipButton: {
+    marginTop: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  skipText: {
+    color: 'forestgreen',
+    fontSize: 16,
+    fontWeight: '600',
   },
   submitText: {
     color: '#fff',

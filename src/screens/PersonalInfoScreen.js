@@ -50,6 +50,7 @@ const PersonalInfoScreen = () => {
   const [medication, setMedication] = useState('');
   const [HMO, setHMO] = useState('');
   const [emergencyContact, setEmergencyContact] = useState('');
+  const [emergencyContactName, setEmergencyContactName] = useState('');
   const [allergyType, setAllergyType] = useState('');
   const [memberID, setMemberID] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
@@ -101,6 +102,7 @@ const PersonalInfoScreen = () => {
           setHMO(user.HMO || '');
           setMemberID(user.memberID || '');
           setEmergencyContact(user.emergencyContact || '');
+          setEmergencyContactName(user.emergencyContactName || '');
           setAllergyType(user.allergyType || '');
           setEmergencyContactRelation(user.emergencyContactRelation || '');
         }
@@ -141,9 +143,7 @@ const PersonalInfoScreen = () => {
       phoneNumberSchema.parse(text);
       setPhoneNumberError(''); // Clear error if valid
     } catch {
-      setPhoneNumberError(
-        'Phone number must contain only digits and be between 7 and 15 characters long.'
-      );
+      setPhoneNumberError('Please enter a valid phone number.');
     }
   };
 
@@ -153,9 +153,7 @@ const PersonalInfoScreen = () => {
       phoneNumberSchema.parse(text);
       setEmergencyContactError(''); // Clear error if valid
     } catch {
-      setEmergencyContactError(
-        'Emergency contact must contain only digits and be between 7 and 15 characters long.'
-      );
+      setEmergencyContactError('Please enter a valid phone number.');
     }
   };
 
@@ -170,7 +168,6 @@ const PersonalInfoScreen = () => {
         userIdToUse = userData?.profile?._id;
       }
       console.log('userId:', userIdToUse);
-  
 
       const idToUse = userIdToUse;
       if (!idToUse) {
@@ -187,8 +184,8 @@ const PersonalInfoScreen = () => {
         return;
       }
 
-      if (!username || !dateOfBirth || !allergies || !medication || !HMO) {
-        Alert.alert('Error', 'Please fill in all fields.');
+      if (!username || !dateOfBirth) {
+        Alert.alert('Error', 'Please fill in all required fields.');
         return;
       }
 
@@ -200,13 +197,14 @@ const PersonalInfoScreen = () => {
         phoneNumber,
         dateOfBirth,
         bloodGroup,
-        allergies,
-        allergyType,
-        medication,
-        HMO,
-        memberID,
+        allergies: allergies || '',
+        allergyType: allergyType || '',
+        medication: medication || '',
+        HMO: HMO || '',
+        memberID: memberID || '',
         emergencyContact,
-        emergencyContactRelation,
+        emergencyContactName: emergencyContactName || '',
+        emergencyContactRelation: emergencyContactRelation || '',
         relation: relation || '',
       };
 
@@ -219,7 +217,10 @@ const PersonalInfoScreen = () => {
         data.profileImage = profileImage;
       }
 
-      console.log('Updating profile at:', `${API_URL}/users/${idToUse}/profile`);
+      console.log(
+        'Updating profile at:',
+        `${API_URL}/users/${idToUse}/profile`
+      );
       console.log('Payload:', data);
 
       setLoading(true);
@@ -254,9 +255,11 @@ const PersonalInfoScreen = () => {
       }
       console.log('Error config:', error.config);
       Alert.alert(
-          'Error',
-          error.response.data.message || JSON.stringify(error.response.data) || 'An unexpected error occurred'
-        );
+        'Error',
+        error.response.data.message ||
+          JSON.stringify(error.response.data) ||
+          'An unexpected error occurred'
+      );
     } finally {
       setLoading(false);
     }
@@ -453,10 +456,18 @@ const PersonalInfoScreen = () => {
           />
           <TextInput
             style={styles.input}
-            placeholder="Emergency Contact"
+            placeholder="Name of Emergency Contact"
+            value={emergencyContactName}
+            onChangeText={setEmergencyContactName}
+            editable={editable}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Emergency Contact Phone Number"
             value={emergencyContact}
             onChangeText={handleEmergencyContactChange}
             editable={editable}
+            keyboardType="phone-pad"
           />
           {emergencyContactError ? (
             <Text style={styles.errorText}>{emergencyContactError}</Text>
@@ -571,6 +582,13 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     color: 'grey',
+  },
+  sectionLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginTop: 15,
+    marginBottom: 5,
+    fontWeight: '500',
   },
   gender: {
     textColor: 'grey',

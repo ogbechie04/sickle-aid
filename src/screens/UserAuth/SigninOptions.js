@@ -37,42 +37,55 @@ const SignInOptionsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Select the applicable option</Text>
+      <Text style={styles.instructionText}>Choose one of the following:</Text>
 
-      <TouchableOpacity
-        style={[
-          styles.PSC,
-          selectedRelation === 'PSC' && styles.selectedOption,
-        ]}
-        onPress={handlePSCPress}
-      >
-        <Text style={styles.PSCText}>Person with Sickle Cell (PSC)</Text>
-      </TouchableOpacity>
-
-      <View
-        style={[
-          styles.pickerContainer,
-          selectedRelation !== 'PSC' &&
-            selectedRelation !== '' &&
-            styles.selectedOption,
-        ]}
-      >
-        <Picker
-          selectedValue={selectedRelation === 'PSC' ? '' : selectedRelation}
-          onValueChange={handlePickerChange}
-          style={styles.picker}
-          itemStyle={styles.pickerItem}
+      <View style={styles.optionGroup}>
+        <Text style={styles.optionLabel}>I am a Person with Sickle Cell:</Text>
+        <TouchableOpacity
+          style={[
+            styles.PSC,
+            selectedRelation === 'PSC' && styles.selectedOption,
+          ]}
+          onPress={handlePSCPress}
         >
-          <Picker.Item label="Select Relation" value="" color="#888" />
-          <Picker.Item label="Loved Ones" value="Loved Ones" />
-          <Picker.Item label="Wife" value="Wife" />
-          <Picker.Item label="Husband" value="Husband" />
-          <Picker.Item label="Dad" value="Dad" />
-          <Picker.Item label="Mum" value="Mum" />
-          <Picker.Item
-            label="Not a direct relative"
-            value="Not a direct relative"
-          />
-        </Picker>
+          <Text style={styles.PSCText}>Person with Sickle Cell (PSC)</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.divider}>
+        <View style={styles.dividerLine} />
+        <Text style={styles.dividerText}>or</Text>
+        <View style={styles.dividerLine} />
+      </View>
+
+      <View style={styles.optionGroup}>
+        <Text style={styles.optionLabel}>I am a (select relationship):</Text>
+        <View
+          style={[
+            styles.pickerContainer,
+            selectedRelation !== 'PSC' &&
+              selectedRelation !== '' &&
+              styles.selectedOption,
+          ]}
+        >
+          <Picker
+            selectedValue={selectedRelation === 'PSC' ? '' : selectedRelation}
+            onValueChange={handlePickerChange}
+            style={styles.picker}
+            itemStyle={styles.pickerItem}
+          >
+            <Picker.Item label="Select Relation" value="" color="#888" />
+            <Picker.Item label="Loved Ones" value="Loved Ones" />
+            <Picker.Item label="Wife" value="Wife" />
+            <Picker.Item label="Husband" value="Husband" />
+            <Picker.Item label="Dad" value="Dad" />
+            <Picker.Item label="Mum" value="Mum" />
+            <Picker.Item
+              label="Not a direct relative"
+              value="Not a direct relative"
+            />
+          </Picker>
+        </View>
       </View>
 
       <TouchableOpacity
@@ -100,14 +113,46 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: 'black',
   },
+  instructionText: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  optionGroup: {
+    width: '100%',
+    marginBottom: 8,
+    paddingTop: 4,
+  },
+  optionLabel: {
+    fontSize: 14,
+    color: '#333',
+    paddingBottom: 4,
+    fontWeight: '500',
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 2,
+    width: '100%',
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ddd',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: '#666',
+  },
   PSC: {
     width: '100%',
     height: 50,
     borderWidth: 1,
     borderRadius: 10,
     borderColor: 'black',
-    marginBottom: 50,
-    marginTop: 50,
+    marginBottom: 20,
+    marginTop: 10,
     paddingTop: 10,
     paddingLeft: 10,
     justifyContent: 'center',
@@ -119,6 +164,7 @@ const styles = StyleSheet.create({
   pickerContainer: {
     width: '100%',
     backgroundColor: 'palegoldenrod',
+    marginTop: 10,
     borderWidth: 1,
     borderRadius: 10,
     borderColor: 'black',
